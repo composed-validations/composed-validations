@@ -4,7 +4,7 @@
   "description": "Simple and highly extensible validation library",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/barrier $(find test -name '*_test.coffee')"
   },
   "repository": {
     "type": "git",
