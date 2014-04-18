@@ -19,11 +19,11 @@
     "url": "https://github.com/wilkerlucio/composed-validations/issues"
   },
   "dependencies": {
-    "lodash": "~2.4.1",
-    "coffee-script": "~1.7.1"
+    "coffee-script": "~1.7.1",
+    "promise": "~4.0.0"
   },
   "devDependencies": {
-    "barriertest": "~0.4.0",
+    "barriertest": "~0.4.1",
     "sinon": "~1.9.1"
   }
 }

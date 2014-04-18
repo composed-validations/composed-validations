@@ -1,5 +1,4 @@
-_ = require('lodash')
-
+_ = require('./util.coffee')
 ValidationError = require('./error.coffee')
 
 trim = (string) -> string.replace(/^\s+|\s+$/g, '')
