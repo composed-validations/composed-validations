@@ -1,6 +1,6 @@
-_ = require("./util.coffee")
+_ = require("../util.coffee")
 
-ValidationError = require('./error.coffee')
+ValidationError = require('../error.coffee')
 MultiValidator = require('./multi_validator.coffee')
 
 Promise = require('promise')

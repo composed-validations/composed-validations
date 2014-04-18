@@ -1,5 +1,5 @@
-_ = require("./util.coffee")
-ValidationError = require('./error.coffee')
+_ = require("../util.coffee")
+ValidationError = require('../error.coffee')
 
 module.exports = class IncludeValidator
   constructor: (@possibilities) ->

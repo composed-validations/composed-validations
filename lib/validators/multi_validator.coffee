@@ -1,4 +1,4 @@
-ValidationError = require('./error.coffee')
+ValidationError = require('../error.coffee')
 
 module.exports = class MultiValidator
   constructor: ->
