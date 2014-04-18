@@ -1,3 +1,4 @@
+Promise = require('promise')
 _ = require('../lib/util.coffee')
 
 describe "Util", ->
@@ -53,3 +54,22 @@ describe "Util", ->
       expect(_.has(obj, 'e')).true
       expect(_.has(obj, 'f')).true
       expect(_.has(obj, 'g')).false
+
+  describe "#lift", ->
+    describe "dealing with values", ->
+      it "converts the return into a promise", ->
+        fn = (input) -> "#{input}-value"
+
+        _.lift(fn)('in').then (value) ->
+          expect(value).eq 'in-value'
+
+      it "raises a rejected promise when the function throw an error", ->
+        fn = -> throw new Error('err')
+
+        expect(_.lift(fn)()).hold.reject('err')
+
+    it "returns a promise if it's already one", ->
+      fn = -> Promise.resolve('value')
+
+      _.lift(fn)().then (value) ->
+        expect(value).eq 'value'

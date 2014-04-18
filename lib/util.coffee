@@ -1,3 +1,5 @@
+Promise = require('promise')
+
 module.exports =
   defaults: (object, defaults) ->
     for key, value of object
@@ -28,3 +30,10 @@ module.exports =
       return true if key == lookupKey
 
     false
+
+  lift: (fn) ->
+    (args...) ->
+      try
+        Promise.resolve(fn(args...))
+      catch err
+        Promise.reject(err)

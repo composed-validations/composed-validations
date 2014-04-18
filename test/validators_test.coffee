@@ -9,10 +9,20 @@ testPass = (validator, value) ->
 
   expect((-> validator.test(value)), message).not.throw()
 
+testPassAsync = (validator, value) ->
+  message = "#{validator} should resolve value #{JSON.stringify(value)}"
+
+  expect(validator.test(value), message).hold.not.reject()
+
 testFail = (validator, value) ->
   message = "#{validator} should fail value #{JSON.stringify(value)}"
 
   expect((-> validator.test(value)), message).throw(ValidationError)
+
+testFailAsync = (validator, value) ->
+  message = "#{validator} should reject value #{JSON.stringify(value)}"
+
+  expect(validator.test(value), message).hold.reject(ValidationError)
 
 testValidator = (validator, builder) ->
   pass = (value) -> testPass(validator, value)
@@ -79,7 +89,7 @@ describe "Validators", ->
 
     describe "#test", ->
       describe "empty validator", ->
-        it "doesn't reject on test", (validator) ->
+        it "passes the test", (validator) ->
           testPass(validator, {})
 
       describe "given there is a failed validation", ->
@@ -93,6 +103,29 @@ describe "Validators", ->
           validator.add(passValidator)
 
           testPass(validator, 'value')
+          expect(passValidator.test.calledWith('value')).true
+
+  describe "MultiAsyncValidator", ->
+    MultiAsyncValidator = requireValidator('multi_async')
+
+    lazy "validator", -> new MultiAsyncValidator()
+
+    describe "#test", ->
+      describe "empty validator", ->
+        it "passes async", (validator) ->
+          testPassAsync(validator, {})
+
+      describe "given there is a failed validation", ->
+        it "rejects with the validation error", (validator, failValidator) ->
+          validator.add(failValidator)
+
+          testFailAsync(validator, {})
+
+      describe "given there is a passing validation", ->
+        it "passes the test", (validator, passValidator) ->
+          validator.add(passValidator)
+
+          testPassAsync(validator, 'value')
           expect(passValidator.test.calledWith('value')).true
 
   describe "FieldValidator", ->
