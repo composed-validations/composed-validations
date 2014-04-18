@@ -1,0 +1,96 @@
+sinon = require('sinon')
+
+ValidationError = require('../lib/error.coffee')
+
+requireValidator = (name) -> require('../lib/' + name + '_validator.coffee')
+
+testPass = (validator, value) ->
+  message = "#{validator} should pass value #{JSON.stringify(value)}"
+
+  expect((-> validator.test(value)), message).not.throw()
+
+testFail = (validator, value) ->
+  message = "#{validator} should fail value #{JSON.stringify(value)}"
+
+  expect((-> validator.test(value)), message).throw(ValidationError)
+
+testValidator = (validator, builder) ->
+  pass = (value) -> testPass(validator, value)
+  fail = (value) -> testFail(validator, value)
+
+  builder(pass, fail)
+
+describe "Validators", ->
+  lazy 'failValidator', -> test: -> throw new ValidationError('failed')
+  lazy 'passValidator', -> test: sinon.stub()
+
+  describe "PresenceValidator", ->
+    PresenceValidator = requireValidator('presence')
+
+    describe "#test", ->
+      it "correctly validates the presence of a value", ->
+        testValidator new PresenceValidator(), (pass, fail) ->
+          pass('valid')
+          pass(true)
+          pass(['value'])
+          pass({})
+          pass([])
+
+          fail(null)
+          fail(undefined)
+          fail(false)
+          fail('  ')
+
+  describe "MultiValidator", ->
+    MultiValidator = requireValidator('multi')
+
+    lazy "validator", -> new MultiValidator()
+
+    describe "#test", ->
+      describe "empty validator", ->
+        it "doesn't reject on test", (validator) ->
+          testPass(validator, {})
+
+      describe "given there is a failed validation", ->
+        it "fails the test", (validator, failValidator) ->
+          validator.add(failValidator)
+
+          testFail(validator, {})
+
+      describe "given there is a passing validation", ->
+        it "passes the test", (validator, passValidator) ->
+          validator.add(passValidator)
+
+          testPass(validator, 'value')
+          expect(passValidator.test.calledWith('value')).true
+
+  describe "FieldValidator", ->
+    FieldValidator = requireValidator('field')
+
+    describe "#test", ->
+      it "fails if the field is not present on the object", ->
+        validator = new FieldValidator('name')
+
+        testFail(validator, {})
+
+      it "fails when the validation fails on the field", (failValidator) ->
+        validator = new FieldValidator('name', failValidator)
+
+        testFail(validator, {name: 'User'})
+
+      it "passes when the validation passes", (passValidator) ->
+        validator = new FieldValidator('name', passValidator)
+
+        testPass(validator, {name: 'User'})
+        expect(passValidator.test.calledWith('User')).true
+
+      describe "given the optional flag is passed", ->
+        lazy "validator", (failValidator) -> new FieldValidator('name', failValidator, optional: true)
+
+        it "skips the validation and passes if the field is not present", (validator) ->
+          testPass(validator, {})
+
+        it "still runs the validation when the field is present", (validator) ->
+          testFail(validator, {name: null})
+          testFail(validator, {name: undefined})
+          testFail(validator, {name: 'value'})
