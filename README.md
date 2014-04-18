@@ -203,3 +203,5 @@ What about that huh? :)
 
 The StructValidator is just a pretty wrapper around the other validators, it's using the exact same stuff as before,
 it's just a nice wrapper around it. You can read more about it at `StructValidator` section.
+
+This library and it's documentation are in active development and design, and can still change a lot. Stay tuned.
