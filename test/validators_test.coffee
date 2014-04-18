@@ -82,6 +82,22 @@ describe "Validators", ->
           fail(['valid'])
           fail({})
 
+  describe "FormatValidator", ->
+    FormatValidator = requireValidator('format')
+
+    describe "#test", ->
+      it "passes when the value matches the given expression", ->
+        testValidator new FormatValidator(/\d+/), (pass, fail) ->
+          pass('123')
+          pass('51')
+          pass('a3c')
+
+          fail('abc')
+          fail(null)
+          fail(undefined)
+          fail(false)
+          fail(true)
+
   describe "MultiValidator", ->
     MultiValidator = requireValidator('multi')
 
