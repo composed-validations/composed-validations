@@ -96,7 +96,7 @@ The point here is just to have you know about validators may return a `Promise` 
 We don't provide async validators, but we provide some mechanims for you to use them, we will talk more about that later
 on this doc.
 
-If you are not familiar with the `Promise` concept, this is a good place to start: [http://promisesaplus.com/]()
+If you are not familiar with the `Promise` concept, this is a good place to start: [https://www.promisejs.org]()
 
 Composed Validations
 --------------------
@@ -168,7 +168,7 @@ userValidator = new MultiValidator();
 userValidator.add(new FieldValidator('name', new PresenceValidator());
 userValidator.add(new FieldValidator('age', new RangeValidator(0, 200));
 userValidator.add(new FieldValidator('userType', new IncludeValidator(['member', 'admin']));
-// the nesting!
+// in fact, the address validator is just another composed validator, so just send it!
 userValidator.add(new FieldValidator('address', addressValidator));
 
 userValidator.test({
@@ -183,3 +183,23 @@ userValidator.test({
   }
 }); // and there you have it, all validations will go into the right places!
 ```
+
+Ok, maybe you are looking at it and feeling "oh dude, that's verbose as hell...", and maybe you right, or maybe not, but
+who am I to judge, trying to please more people (and because that's actually a very common pattern) we provide a more
+pleasing way to validate your model-like objects.
+
+```javascript
+var StructValidator = require('composed-validations').StructValidator;
+
+var userValidator = new StructValidator()
+  .validatesPresenceOf('name', 'email', 'phone')
+  .validatesRangeOf('age', 0, 200)
+  .validatesInclusionOf('userType', ['member', 'admin'])
+  .validateField('address', addressValidator)
+  .add(otherValidator)
+```
+
+What about that huh? :)
+
+The StructValidator is just a pretty wrapper around the other validators, it's using the exact same stuff as before,
+it's just a nice wrapper around it. You can read more about it at `StructValidator` section.
