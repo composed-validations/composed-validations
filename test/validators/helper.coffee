@@ -4,6 +4,9 @@ ValidationError = require('../../lib/error.coffee')
 
 lazy 'failValidator', -> test: -> throw new ValidationError('failed')
 lazy 'passValidator', -> test: sinon.stub()
+lazy 'asyncValidator', ->
+  async: -> true
+  test: ->
 
 module.exports =
   requireValidator: (name) -> require('../../lib/validators/' + name + '_validator.coffee')

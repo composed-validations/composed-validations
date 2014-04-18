@@ -5,6 +5,10 @@ describe "MultiAsyncValidator", ->
 
   lazy "validator", -> new MultiAsyncValidator()
 
+  describe "#async", ->
+    it "must return true", (validator) ->
+      expect(validator.async()).true
+
   describe "#test", ->
     describe "empty validator", ->
       it "passes async", (validator) ->

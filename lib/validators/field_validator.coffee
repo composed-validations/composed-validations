@@ -6,6 +6,8 @@ module.exports = class FieldValidator
     @options = _.defaults options,
       optional: false
 
+  async: -> @validator.async?() || false
+
   test: (object) =>
     if @options.optional && !_.has(object, @field)
       return

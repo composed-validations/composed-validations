@@ -3,6 +3,17 @@ h = require('./helper.coffee')
 describe "FieldValidator", ->
   FieldValidator = h.requireValidator('field')
 
+  describe "#async", ->
+    it "returns true if the contained validator is async", (asyncValidator) ->
+      validator = new FieldValidator('whatever', asyncValidator)
+
+      expect(validator.async()).true
+
+    it "returns false when the contained validator is not async", (passValidator) ->
+      validator = new FieldValidator('whatever', passValidator)
+
+      expect(validator.async()).false
+
   describe "#test", ->
     it "fails if the field is not present on the object", ->
       validator = new FieldValidator('name')

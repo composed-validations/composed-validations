@@ -5,6 +5,10 @@ describe "MultiValidator", ->
 
   lazy "validator", -> new MultiValidator()
 
+  describe "#add", ->
+    it "throws an error when you try to add an async validator", (validator, asyncValidator) ->
+      expect(-> validator.add(asyncValidator)).throw("Can't add async validators into the MultiValidator, use the MultiAsyncValidator instead.")
+
   describe "#test", ->
     describe "empty validator", ->
       it "passes the test", (validator) ->
