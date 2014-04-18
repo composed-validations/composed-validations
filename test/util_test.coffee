@@ -68,8 +68,14 @@ describe "Util", ->
 
         expect(_.lift(fn)()).hold.reject('err')
 
-    it "returns a promise if it's already one", ->
-      fn = -> Promise.resolve('value')
+    describe "dealing with promises", ->
+      it "returns a promise if it's already one", ->
+        fn = -> Promise.resolve('value')
 
-      _.lift(fn)().then (value) ->
-        expect(value).eq 'value'
+        _.lift(fn)().then (value) ->
+          expect(value).eq 'value'
+
+      it "raises a rejected promise when the given promise is failed throw an error", ->
+        fn = -> Promise.reject(new Error('err'))
+
+        expect(_.lift(fn)()).hold.reject('err')
