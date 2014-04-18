@@ -1,6 +1,5 @@
 _ = require('lodash')
 
-FieldValidator = require('./field_validator.coffee')
 ValidationError = require('./error.coffee')
 
 module.exports = class MultiValidator
