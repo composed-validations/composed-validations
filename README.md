@@ -16,6 +16,7 @@ Index
   - Leaf validators
     - PresenceValidator
     - RangeValidator
+    - IncludeValidator
     - TypeValidator
     - InstanceOfValidator
   - Compositional validators

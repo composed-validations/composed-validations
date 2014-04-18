@@ -59,6 +59,19 @@ describe "Validators", ->
           fail(-30)
           fail(50)
 
+  describe "IncludeValidator", ->
+    IncludeValidator = requireValidator('include')
+
+    describe "#test", ->
+      it "passes when the value is included on the given list, fails otherwise", ->
+        testValidator new IncludeValidator(['valid', 'stillValid']), (pass, fail) ->
+          pass('valid')
+          pass('stillValid')
+
+          fail('invalid')
+          fail(['valid'])
+          fail({})
+
   describe "MultiValidator", ->
     MultiValidator = requireValidator('multi')
 
