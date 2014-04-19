@@ -5,4 +5,4 @@ module.exports = class RangeValidator
 
   test: (value) =>
     if value < @min || value > @max
-      throw new ValidationError("Value #{value} is out of range [#{@min},#{@max}]")
+      throw new ValidationError("Value #{value} is out of range [#{@min},#{@max}]", value, this)

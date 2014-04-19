@@ -12,7 +12,7 @@ describe "PresenceValidator", ->
         pass({})
         pass([])
 
-        fail(null)
-        fail(undefined)
-        fail(false)
-        fail('  ')
+        fail(null, "null is blank")
+        fail(undefined, "undefined is blank")
+        fail(false, "false is blank")
+        fail('  ', '"  " is blank')

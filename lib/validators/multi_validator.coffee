@@ -11,5 +11,8 @@ module.exports = class MultiValidator
     @validators.push(validator)
 
   test: (object) =>
-    for validator in @validators
-      validator.test(object)
+    try
+      for validator in @validators
+        validator.test(object)
+    catch err
+      throw new ValidationError("", object, this)

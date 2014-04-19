@@ -1,2 +1,2 @@
 module.exports = class ValidationError extends Error
-  constructor: (@message) ->
+  constructor: (@message, @value, @validator) ->

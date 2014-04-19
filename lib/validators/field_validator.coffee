@@ -13,8 +13,15 @@ module.exports = class FieldValidator
       return
 
     unless object[@field]?
-      throw new ValidationError("field #{@field} is not present on the object")
+      throw new ValidationError("field #{@field} is not present on the object", object, this)
 
     value = object[@field]
 
-    @validator.test(value)
+    @runValidator value, (err) =>
+      throw new ValidationError("", object, this) if err
+
+  runValidator: (value, callback) =>
+    try
+      callback(null, @validator.test(value))
+    catch err
+      callback(err)

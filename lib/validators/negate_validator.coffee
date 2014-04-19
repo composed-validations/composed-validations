@@ -13,7 +13,7 @@ module.exports = class NegateValidator
 
   testAsync: (value) =>
     @validator.test(value).then(
-      => @fail()
+      => @fail(value)
       => null
     )
 
@@ -23,6 +23,6 @@ module.exports = class NegateValidator
     catch err
       return
 
-    @fail()
+    @fail(value)
 
-  fail: => throw new ValidationError("validation negated failed")
+  fail: (value) => throw new ValidationError("validation negated failed", value, this)

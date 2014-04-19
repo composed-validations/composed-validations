@@ -15,10 +15,10 @@ describe "FieldValidator", ->
       expect(validator.async()).false
 
   describe "#test", ->
-    it "fails if the field is not present on the object", ->
-      validator = new FieldValidator('name')
+    it "fails if the field is not present on the object", (passValidator) ->
+      validator = new FieldValidator('name', passValidator)
 
-      h.testFail(validator, {})
+      h.testFail(validator, {}, 'field name is not present on the object')
 
     it "fails when the validation fails on the field", (failValidator) ->
       validator = new FieldValidator('name', failValidator)
@@ -41,3 +41,5 @@ describe "FieldValidator", ->
         h.testFail(validator, {name: null})
         h.testFail(validator, {name: undefined})
         h.testFail(validator, {name: 'value'})
+
+    describe "async validators", ->
