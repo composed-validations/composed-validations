@@ -3,17 +3,6 @@ h = require('./helper.coffee')
 NegateValidator = h.requireValidator('negate')
 
 describe "Negate Validator", ->
-  describe "#async", ->
-    it "returns true if the contained validator is async", (asyncValidator) ->
-      validator = new NegateValidator(asyncValidator)
-
-      expect(validator.async()).true
-
-    it "returns false when the contained validator is not async", (passValidator) ->
-      validator = new NegateValidator(passValidator)
-
-      expect(validator.async()).false
-
   describe "#test", ->
     describe "when the validation is sync", ->
       it "fails when the validation passes", (passValidator) ->

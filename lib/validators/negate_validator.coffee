@@ -1,28 +1,8 @@
 ValidationError = require('../error.coffee')
 
-module.exports = class NegateValidator
-  constructor: (@validator) ->
+DelegationalValidator = require('./delegational_validator.coffee')
 
-  async: -> @validator.async?() || false
-
+module.exports = class NegateValidator extends DelegationalValidator
   test: (value) =>
-    if @async()
-      @testAsync(value)
-    else
-      @testSync(value)
-
-  testAsync: (value) =>
-    @validator.test(value).then(
-      => @fail(value)
-      => null
-    )
-
-  testSync: (value) =>
-    try
-      @validator.test(value)
-    catch err
-      return
-
-    @fail(value)
-
-  fail: (value) => throw new ValidationError("validation negated failed", value, this)
+    @runValidator value, (err) =>
+      throw new ValidationError("validation negated failed", value, this) unless err

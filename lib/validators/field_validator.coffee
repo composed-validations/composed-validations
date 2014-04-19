@@ -1,12 +1,14 @@
 _ = require('../util.coffee')
 ValidationError = require("../error.coffee")
 
-module.exports = class FieldValidator
-  constructor: (@field, @validator, options = {}) ->
+DelegationalValidator = require('./delegational_validator.coffee')
+
+module.exports = class FieldValidator extends DelegationalValidator
+  constructor: (@field, validator, options = {}) ->
+    super validator
+
     @options = _.defaults options,
       optional: false
-
-  async: -> @validator.async?() || false
 
   test: (object) =>
     if @options.optional && !_.has(object, @field)
@@ -19,9 +21,3 @@ module.exports = class FieldValidator
 
     @runValidator value, (err) =>
       throw new ValidationError("", object, this) if err
-
-  runValidator: (value, callback) =>
-    try
-      callback(null, @validator.test(value))
-    catch err
-      callback(err)
