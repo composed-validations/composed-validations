@@ -71,16 +71,16 @@ describe "Delegational Validator", ->
         class SubValidationError extends h.ValidationError
 
         validator = new DelegationalValidator(failValidator)
-        err = new SubValidationError('message', 'input', failValidator)
+        childError = new SubValidationError('message', 'input', failValidator)
 
         try
-          validator.throwError('new message', 'newInput', err)
-        catch e
-          expect(e).instanceof(h.ValidationError)
-          expect(e.message).eq 'new message'
-          expect(e.value).eq 'newInput'
-          expect(e.validator).eq validator
-          expect(e.childError).eq err
+          validator.throwError('new message', 'newInput', childError)
+        catch err
+          expect(err).instanceof(h.ValidationError)
+          expect(err.message).eq 'new message'
+          expect(err.value).eq 'newInput'
+          expect(err.validator).eq validator
+          expect(err.childError).eq childError
 
       it "just throw error if the error is not a ValidationError", (passValidator) ->
         validator = new DelegationalValidator(passValidator)
