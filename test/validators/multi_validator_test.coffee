@@ -9,6 +9,11 @@ describe "MultiValidator", ->
     it "throws an error when you try to add an async validator", (validator, asyncValidator) ->
       expect(-> validator.add(asyncValidator)).throw("Can't add async validators into the MultiValidator, use the MultiAsyncValidator instead.")
 
+    it "doesn't throw an error when you add an async validator to an async MultiValidator", (validator, asyncValidator) ->
+      validator.async = -> true
+
+      expect(-> validator.add(asyncValidator)).not.throw()
+
   describe "#test", ->
     describe "empty validator", ->
       it "passes the test", (validator) ->
