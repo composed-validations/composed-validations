@@ -7,15 +7,11 @@ module.exports = class MultiValidator
 
     @add(v) for v in validators
 
-    null
-
   async: => false
 
   add: (validator) =>
     _.guardValidator(validator)
-
-    if validator.async?() == true && !@async()
-      throw new Error("Can't add async validators into the MultiValidator, use the MultiAsyncValidator instead.")
+    @guardAsync(validator)
 
     @validators.push(validator)
 
@@ -25,3 +21,7 @@ module.exports = class MultiValidator
         validator.test(object)
     catch err
       throw new ValidationError("", object, this)
+
+  guardAsync: (validator) =>
+    if validator.async?() == true && !@async()
+      throw new Error("Can't add async validators into the MultiValidator, use the MultiAsyncValidator instead.")
