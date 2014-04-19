@@ -2,6 +2,7 @@ module.exports =
   Promise: require('promise')
 
   ValidationError:       require('./error.coffee')
+  AllValidator:          require('./validators/all_validator.coffee')
   DelegationalValidator: require('./validators/delegational_validator.coffee')
   FieldValidator:        require('./validators/field_validator.coffee')
   FormatValidator:       require('./validators/format_validator.coffee')
