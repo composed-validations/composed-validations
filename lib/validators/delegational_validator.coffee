@@ -1,5 +1,12 @@
+_ = require('../util.coffee')
+ValidationError = require('../error.coffee')
+
+class DelegatedValidationError extends ValidationError
+  constructor: (@message, @value, @childError, @validator) ->
+
 module.exports = class DelegationalValidator
   constructor: (@validator) ->
+    throw new TypeError('argument is not a valid validator') unless _.isValidator(@validator)
 
   async: -> @validator.async?() || false
 
@@ -24,3 +31,9 @@ module.exports = class DelegationalValidator
       return callback(err)
 
     callback(null, res)
+
+  throwError: (message, value, err) =>
+    if err instanceof ValidationError
+      throw new DelegatedValidationError(message, value, err, this)
+    else
+      throw err

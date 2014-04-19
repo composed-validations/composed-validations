@@ -24,6 +24,24 @@ describe "Util", ->
       expect(_.isString('')).true
       expect(_.isString(' ')).true
 
+  describe "#isFunction", ->
+    it "checks if a value is a function", ->
+      expect(_.isFunction(null)).false
+      expect(_.isFunction(true)).false
+      expect(_.isFunction(false)).false
+      expect(_.isFunction([])).false
+      expect(_.isFunction([1])).false
+      expect(_.isFunction({})).false
+
+      expect(_.isFunction(->)).true
+
+  describe "#isValidator", ->
+    it "checks if the object is a validator", ->
+      expect(_.isValidator({test: ->})).true
+      expect(_.isValidator({test: null})).false
+      expect(_.isValidator({})).false
+      expect(_.isValidator(null)).false
+
   describe "#contains", ->
     it "test if an element is present on a list", ->
       expect(_.contains([], 1)).false

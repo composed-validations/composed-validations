@@ -20,4 +20,4 @@ module.exports = class FieldValidator extends DelegationalValidator
     value = object[@field]
 
     @runValidator value, (err) =>
-      throw new ValidationError("", object, this) if err
+      @throwError(err.message, object, err, this) if err

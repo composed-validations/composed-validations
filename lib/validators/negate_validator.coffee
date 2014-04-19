@@ -5,4 +5,7 @@ DelegationalValidator = require('./delegational_validator.coffee')
 module.exports = class NegateValidator extends DelegationalValidator
   test: (value) =>
     @runValidator value, (err) =>
-      throw new ValidationError("validation negated failed", value, this) unless err
+      unless err
+        # TODO: figure out a better way to handle child errors here
+        childError = new ValidationError("", value, this)
+        @throwError("validation negated failed", value, childError, this)

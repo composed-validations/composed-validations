@@ -20,6 +20,10 @@ extractClassName = (object) ->
   defString.match(/^function (\w+)/)[1]
 
 module.exports =
+  _: require('../../lib/util.coffee')
+
+  ValidationError: ValidationError
+
   requireValidator: (name) -> require('../../lib/validators/' + name + '_validator.coffee')
 
   testPass: (validator, value) ->
@@ -55,5 +59,11 @@ module.exports =
   testValidator: (validator, builder) ->
     pass = (value) => @testPass(validator, value)
     fail = (value, message) => @testFail(validator, value, message)
+
+    builder(pass, fail)
+
+  testAsyncValidator: (validator, builder) ->
+    pass = (value) => @testPassAsync(validator, value)
+    fail = (value, message) => @testFailAsync(validator, value, message)
 
     builder(pass, fail)

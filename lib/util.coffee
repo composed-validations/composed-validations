@@ -11,6 +11,10 @@ module.exports =
     typeof value == 'string' ||
       value && typeof value == 'object' && toString.call(value) == '[object String]' || false;
 
+  isFunction: (value) -> typeof value == 'function'
+
+  isValidator: (value) -> @isFunction(value?.test)
+
   contains: (list, value) ->
     for obj in list
       return true if obj == value

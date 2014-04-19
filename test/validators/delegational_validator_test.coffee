@@ -8,6 +8,11 @@ describe "Delegational Validator", ->
 
     expect(validator.validator).eq passValidator
 
+  it "raises an error if you try to construct without a validator", ->
+    createWith = (val) -> -> new DelegationalValidator(val)
+
+    expect(createWith(null)).throw('argument is not a valid validator')
+
   describe "#async", ->
     it "returns true if the contained validator is async", (asyncValidator) ->
       validator = new DelegationalValidator(asyncValidator)
@@ -59,3 +64,26 @@ describe "Delegational Validator", ->
 
         validator.runValidator 'value', (err) ->
           expect(err.message).eq 'failed'
+
+  describe "#throwError", ->
+    describe "when receive a ValidationError", ->
+      it "creates a new ValidationError that wraps the child one", (failValidator) ->
+        class SubValidationError extends h.ValidationError
+
+        validator = new DelegationalValidator(failValidator)
+        err = new SubValidationError('message', 'input', failValidator)
+
+        try
+          validator.throwError('new message', 'newInput', err)
+        catch e
+          expect(e).instanceof(h.ValidationError)
+          expect(e.message).eq 'new message'
+          expect(e.value).eq 'newInput'
+          expect(e.validator).eq validator
+          expect(e.childError).eq err
+
+      it "just throw error if the error is not a ValidationError", (passValidator) ->
+        validator = new DelegationalValidator(passValidator)
+        err = new Error('invalid')
+
+        expect(-> validator.throwError('whatever', 'input', err)).throw(err)
