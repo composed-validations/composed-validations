@@ -4,8 +4,10 @@ module.exports = class MultiValidator
   constructor: ->
     @validators = []
 
+  async: -> false
+
   add: (validator) =>
-    if validator.async?() == true
+    if validator.async?() == true && !@async()
       throw new Error("Can't add async validators into the MultiValidator, use the MultiAsyncValidator instead.")
 
     @validators.push(validator)

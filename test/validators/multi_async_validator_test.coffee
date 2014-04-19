@@ -26,3 +26,16 @@ describe "MultiAsyncValidator", ->
 
         h.testPassAsync(validator, 'value')
         expect(passValidator.test.calledWith('value')).true
+
+    describe "given there is an async failed validation", ->
+      it "rejects with the validation error", (validator, asyncFailValidator) ->
+        validator.add(asyncFailValidator)
+
+        h.testFailAsync(validator, {})
+
+    describe "given there is a passing async validation", ->
+      it "passes the test", (validator, asyncValidator) ->
+        validator.add(asyncValidator)
+
+        h.testPassAsync(validator, 'value')
+        expect(asyncValidator.test.calledWith('value')).true
