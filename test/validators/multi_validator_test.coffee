@@ -1,8 +1,8 @@
 h = require('./helper.coffee')
 
-describe "MultiValidator", ->
-  MultiValidator = h.requireValidator('multi')
+MultiValidator = h.requireValidator('multi')
 
+describe "MultiValidator", ->
   lazy "validator", -> new MultiValidator()
 
   describe "#add", ->

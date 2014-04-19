@@ -1,8 +1,8 @@
 h = require('./helper.coffee')
 
-describe "MultiAsyncValidator", ->
-  MultiAsyncValidator = h.requireValidator('multi_async')
+MultiAsyncValidator = h.requireValidator('multi_async')
 
+describe "MultiAsyncValidator", ->
   lazy "validator", -> new MultiAsyncValidator()
 
   describe "#async", ->

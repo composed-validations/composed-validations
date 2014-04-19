@@ -1,8 +1,8 @@
 h = require('./helper.coffee')
 
-describe "RangeValidator", ->
-  RangeValidator = h.requireValidator('range')
+RangeValidator = h.requireValidator('range')
 
+describe "RangeValidator", ->
   describe "#test", ->
     it "correctly validates if the value in on the defined range", ->
       h.testValidator new RangeValidator(-5, 32), (pass, fail) ->

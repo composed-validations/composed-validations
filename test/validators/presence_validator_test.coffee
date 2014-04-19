@@ -1,8 +1,8 @@
 h = require('./helper.coffee')
 
-describe "PresenceValidator", ->
-  PresenceValidator = h.requireValidator('presence')
+PresenceValidator = h.requireValidator('presence')
 
+describe "PresenceValidator", ->
   describe "#test", ->
     it "correctly validates the presence of a value", ->
       h.testValidator new PresenceValidator(), (pass, fail) ->

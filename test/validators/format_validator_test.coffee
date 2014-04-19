@@ -1,8 +1,8 @@
 h = require('./helper.coffee')
 
-describe "FormatValidator", ->
-  FormatValidator = h.requireValidator('format')
+FormatValidator = h.requireValidator('format')
 
+describe "FormatValidator", ->
   describe "#test", ->
     it "passes when the value matches the given expression", ->
       h.testValidator new FormatValidator(/\d+/), (pass, fail) ->

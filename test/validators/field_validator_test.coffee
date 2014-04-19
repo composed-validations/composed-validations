@@ -1,8 +1,8 @@
 h = require('./helper.coffee')
 
-describe "FieldValidator", ->
-  FieldValidator = h.requireValidator('field')
+FieldValidator = h.requireValidator('field')
 
+describe "FieldValidator", ->
   describe "#test", ->
     it "fails if the field is not present on the object", (passValidator) ->
       validator = new FieldValidator('name', passValidator)
