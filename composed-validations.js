@@ -1,17 +1,8 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-window.ComposedValidations = {
-  Promise: require('promise'),
-  ValidationError: require('./error.coffee'),
-  FieldValidator: require('./field_validator.coffee'),
-  IncludeValidator: require('./include_validator.coffee'),
-  MultiValidator: require('./multi_validator.coffee'),
-  MultiAsyncValidator: require('./multi_async_validator.coffee'),
-  PresenceValidator: require('./presence_validator.coffee'),
-  RangeValidator: require('./range_validator.coffee')
-};
+window.ComposedValidations = require('./index.coffee');
 
 
-},{"./error.coffee":2,"./field_validator.coffee":3,"./include_validator.coffee":4,"./multi_async_validator.coffee":5,"./multi_validator.coffee":6,"./presence_validator.coffee":7,"./range_validator.coffee":8,"promise":10}],2:[function(require,module,exports){
+},{"./index.coffee":3}],2:[function(require,module,exports){
 var ValidationError,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -29,10 +20,87 @@ module.exports = ValidationError = (function(_super) {
 
 
 },{}],3:[function(require,module,exports){
-var FieldValidator, ValidationError,
+module.exports = {
+  Promise: require('promise'),
+  ValidationError: require('./error.coffee'),
+  FieldValidator: require('./validators/field_validator.coffee'),
+  IncludeValidator: require('./validators/include_validator.coffee'),
+  MultiValidator: require('./validators/multi_validator.coffee'),
+  MultiAsyncValidator: require('./validators/multi_async_validator.coffee'),
+  PresenceValidator: require('./validators/presence_validator.coffee'),
+  RangeValidator: require('./validators/range_validator.coffee')
+};
+
+
+},{"./error.coffee":2,"./validators/field_validator.coffee":5,"./validators/include_validator.coffee":6,"./validators/multi_async_validator.coffee":7,"./validators/multi_validator.coffee":8,"./validators/presence_validator.coffee":9,"./validators/range_validator.coffee":10,"promise":12}],4:[function(require,module,exports){
+var Promise,
+  __slice = [].slice;
+
+Promise = require('promise');
+
+module.exports = {
+  defaults: function(object, defaults) {
+    var key, value;
+    for (key in object) {
+      value = object[key];
+      defaults[key] = value;
+    }
+    return defaults;
+  },
+  isString: function(value) {
+    return typeof value === 'string' || value && typeof value === 'object' && toString.call(value) === '[object String]' || false;
+  },
+  contains: function(list, value) {
+    var obj, _i, _len;
+    for (_i = 0, _len = list.length; _i < _len; _i++) {
+      obj = list[_i];
+      if (obj === value) {
+        return true;
+      }
+    }
+    return false;
+  },
+  map: function(list, iterator) {
+    var newList, value, _i, _len;
+    newList = [];
+    for (_i = 0, _len = list.length; _i < _len; _i++) {
+      value = list[_i];
+      newList.push(iterator(value));
+    }
+    return newList;
+  },
+  has: function(object, lookupKey) {
+    var key, value;
+    for (key in object) {
+      value = object[key];
+      if (key === lookupKey) {
+        return true;
+      }
+    }
+    return false;
+  },
+  lift: function(fn) {
+    return function() {
+      var args, err;
+      args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      try {
+        return Promise.resolve(fn.apply(null, args));
+      } catch (_error) {
+        err = _error;
+        return Promise.reject(err);
+      }
+    };
+  }
+};
+
+
+},{"promise":12}],5:[function(require,module,exports){
+var FieldValidator, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-ValidationError = require("./error.coffee");
+_ = require('../util.coffee');
+
+ValidationError = require("../error.coffee");
 
 module.exports = FieldValidator = (function() {
   function FieldValidator(field, validator, options) {
@@ -46,6 +114,11 @@ module.exports = FieldValidator = (function() {
       optional: false
     });
   }
+
+  FieldValidator.prototype.async = function() {
+    var _base;
+    return (typeof (_base = this.validator).async === "function" ? _base.async() : void 0) || false;
+  };
 
   FieldValidator.prototype.test = function(object) {
     var value;
@@ -64,11 +137,13 @@ module.exports = FieldValidator = (function() {
 })();
 
 
-},{"./error.coffee":2}],4:[function(require,module,exports){
-var IncludeValidator, ValidationError,
+},{"../error.coffee":2,"../util.coffee":4}],6:[function(require,module,exports){
+var IncludeValidator, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-ValidationError = require('./error.coffee');
+_ = require("../util.coffee");
+
+ValidationError = require('../error.coffee');
 
 module.exports = IncludeValidator = (function() {
   function IncludeValidator(possibilities) {
@@ -87,36 +162,19 @@ module.exports = IncludeValidator = (function() {
 })();
 
 
-},{"./error.coffee":2}],5:[function(require,module,exports){
-var MultiAsyncValidator, MultiValidator, Promise, ValidationError, lift,
-  __slice = [].slice,
+},{"../error.coffee":2,"../util.coffee":4}],7:[function(require,module,exports){
+var MultiAsyncValidator, MultiValidator, Promise, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-ValidationError = require('./error.coffee');
+_ = require("../util.coffee");
+
+ValidationError = require('../error.coffee');
 
 MultiValidator = require('./multi_validator.coffee');
 
 Promise = require('promise');
-
-lift = function(fn) {
-  return function() {
-    var args;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    return Promise.all(args).then(function(resolvedArgs) {
-      return new Promise(function(resolve, reject) {
-        var err;
-        try {
-          return resolve(fn.apply(fn, resolvedArgs));
-        } catch (_error) {
-          err = _error;
-          return reject(err);
-        }
-      });
-    });
-  };
-};
 
 module.exports = MultiAsyncValidator = (function(_super) {
   __extends(MultiAsyncValidator, _super);
@@ -126,10 +184,14 @@ module.exports = MultiAsyncValidator = (function(_super) {
     return MultiAsyncValidator.__super__.constructor.apply(this, arguments);
   }
 
+  MultiAsyncValidator.prototype.async = function() {
+    return true;
+  };
+
   MultiAsyncValidator.prototype.test = function(value) {
     var results;
     results = _.map(this.validators, function(v) {
-      return lift(v.test)(value);
+      return _.lift(v.test)(value);
     });
     return Promise.all(results);
   };
@@ -139,11 +201,11 @@ module.exports = MultiAsyncValidator = (function(_super) {
 })(MultiValidator);
 
 
-},{"./error.coffee":2,"./multi_validator.coffee":6,"promise":10}],6:[function(require,module,exports){
+},{"../error.coffee":2,"../util.coffee":4,"./multi_validator.coffee":8,"promise":12}],8:[function(require,module,exports){
 var MultiValidator, ValidationError,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-ValidationError = require('./error.coffee');
+ValidationError = require('../error.coffee');
 
 module.exports = MultiValidator = (function() {
   function MultiValidator() {
@@ -153,6 +215,9 @@ module.exports = MultiValidator = (function() {
   }
 
   MultiValidator.prototype.add = function(validator) {
+    if ((typeof validator.async === "function" ? validator.async() : void 0) === true) {
+      throw new Error("Can't add async validators into the MultiValidator, use the MultiAsyncValidator instead.");
+    }
     return this.validators.push(validator);
   };
 
@@ -172,11 +237,13 @@ module.exports = MultiValidator = (function() {
 })();
 
 
-},{"./error.coffee":2}],7:[function(require,module,exports){
-var PresenceValidator, ValidationError, trim,
+},{"../error.coffee":2}],9:[function(require,module,exports){
+var PresenceValidator, ValidationError, trim, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-ValidationError = require('./error.coffee');
+_ = require('../util.coffee');
+
+ValidationError = require('../error.coffee');
 
 trim = function(string) {
   return string.replace(/^\s+|\s+$/g, '');
@@ -207,11 +274,11 @@ module.exports = PresenceValidator = (function() {
 })();
 
 
-},{"./error.coffee":2}],8:[function(require,module,exports){
+},{"../error.coffee":2,"../util.coffee":4}],10:[function(require,module,exports){
 var RangeValidator, ValidationError,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-ValidationError = require('./error.coffee');
+ValidationError = require('../error.coffee');
 
 module.exports = RangeValidator = (function() {
   function RangeValidator(min, max) {
@@ -231,7 +298,7 @@ module.exports = RangeValidator = (function() {
 })();
 
 
-},{"./error.coffee":2}],9:[function(require,module,exports){
+},{"../error.coffee":2}],11:[function(require,module,exports){
 'use strict';
 
 var asap = require('asap')
@@ -338,7 +405,7 @@ function doResolve(fn, onFulfilled, onRejected) {
   }
 }
 
-},{"asap":11}],10:[function(require,module,exports){
+},{"asap":13}],12:[function(require,module,exports){
 'use strict';
 
 //This file contains then/promise specific extensions to the core promise API
@@ -512,7 +579,7 @@ Promise.race = function (values) {
   });
 }
 
-},{"./core.js":9,"asap":11}],11:[function(require,module,exports){
+},{"./core.js":11,"asap":13}],13:[function(require,module,exports){
 (function (process){
 
 // Use the fastest possible means to execute a task in a future turn
@@ -629,7 +696,7 @@ module.exports = asap;
 
 
 }).call(this,require("/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":12}],12:[function(require,module,exports){
+},{"/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":14}],14:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
