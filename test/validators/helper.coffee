@@ -1,3 +1,6 @@
+# just a safe check to ensure the index is loading without errors
+require('../../index')
+
 Promise = require('promise')
 sinon = require('sinon')
 
