@@ -2,6 +2,8 @@ Promise = require('promise')
 _ = require('../lib/util.coffee')
 
 describe "Util", ->
+  lazy "validator", -> test: ->
+
   describe "#defaults", ->
     it "extends an object from the left to right", ->
       incomeOptions =
@@ -41,6 +43,13 @@ describe "Util", ->
       expect(_.isValidator({test: null})).false
       expect(_.isValidator({})).false
       expect(_.isValidator(null)).false
+
+  describe "#guardValidator", ->
+    it "raises an error if the given argument is not validator", ->
+      expect(-> _.guardValidator(null)).throw('null is not a valid validator')
+
+    it "does nothing when it's valid", (validator) ->
+      expect(-> _.guardValidator(validator)).not.throw()
 
   describe "#contains", ->
     it "test if an element is present on a list", ->

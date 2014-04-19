@@ -11,7 +11,7 @@ describe "Delegational Validator", ->
   it "raises an error if you try to construct without a validator", ->
     createWith = (val) -> -> new DelegationalValidator(val)
 
-    expect(createWith(null)).throw('argument is not a valid validator')
+    expect(createWith(null)).throw('null is not a valid validator')
 
   describe "#async", ->
     it "returns true if the contained validator is async", (asyncValidator) ->

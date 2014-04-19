@@ -15,6 +15,10 @@ module.exports =
 
   isValidator: (value) -> @isFunction(value?.test)
 
+  guardValidator: (validator) ->
+    unless @isValidator(validator)
+      throw new TypeError("#{JSON.stringify(validator)} is not a valid validator")
+
   contains: (list, value) ->
     for obj in list
       return true if obj == value

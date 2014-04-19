@@ -1,12 +1,19 @@
+_ = require('../util.coffee')
 ValidationError = require('../error.coffee')
 
 module.exports = class MultiValidator
-  constructor: ->
+  constructor: (validators = []) ->
     @validators = []
 
-  async: -> false
+    @add(v) for v in validators
+
+    null
+
+  async: => false
 
   add: (validator) =>
+    _.guardValidator(validator)
+
     if validator.async?() == true && !@async()
       throw new Error("Can't add async validators into the MultiValidator, use the MultiAsyncValidator instead.")
 

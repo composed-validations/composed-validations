@@ -5,8 +5,7 @@ class DelegatedValidationError extends ValidationError
   constructor: (@message, @value, @childError, @validator) ->
 
 module.exports = class DelegationalValidator
-  constructor: (@validator) ->
-    throw new TypeError('argument is not a valid validator') unless _.isValidator(@validator)
+  constructor: (@validator) -> _.guardValidator(@validator)
 
   async: -> @validator.async?() || false
 
