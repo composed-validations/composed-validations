@@ -12,8 +12,6 @@ Index
 - Basic Validations
 - Async Validations
 - Composed Validations
-  - composing sync validations
-  - composing async validations
 - Built-in validators
   - Leaf validators
     - PresenceValidator
@@ -184,24 +182,12 @@ userValidator.test({
 }); // and there you have it, all validations will go into the right places!
 ```
 
-Ok, maybe you are looking at it and feeling "oh dude, that's verbose as hell...", and maybe you right, or maybe not, but
-who am I to judge, trying to please more people (and because that's actually a very common pattern) we provide a more
-pleasing way to validate your model-like objects.
+Built-in Validators
+-------------------
 
-```javascript
-var StructValidator = require('composed-validations').StructValidator;
+This section documents each single validator on the framework.
 
-var userValidator = new StructValidator()
-  .validatesPresenceOf('name', 'email', 'phone')
-  .validatesRangeOf('age', 0, 200)
-  .validatesInclusionOf('userType', ['member', 'admin'])
-  .validateField('address', addressValidator)
-  .add(otherValidator)
-```
-
-What about that huh? :)
-
-The StructValidator is just a pretty wrapper around the other validators, it's using the exact same stuff as before,
-it's just a nice wrapper around it. You can read more about it at `StructValidator` section.
+Warning
+-------
 
 This library and it's documentation are in active development and design, and can still change a lot. Stay tuned.
