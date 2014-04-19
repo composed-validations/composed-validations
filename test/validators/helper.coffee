@@ -1,3 +1,4 @@
+Promise = require('promise')
 sinon = require('sinon')
 
 ValidationError = require('../../lib/error.coffee')
@@ -6,7 +7,10 @@ lazy 'failValidator', -> test: -> throw new ValidationError('failed')
 lazy 'passValidator', -> test: sinon.stub()
 lazy 'asyncValidator', ->
   async: -> true
-  test: ->
+  test: sinon.stub().returns(Promise.resolve(null))
+lazy 'asyncFailValidator', ->
+  async: -> true
+  test: -> Promise.reject(new ValidationError('failed'))
 
 module.exports =
   requireValidator: (name) -> require('../../lib/validators/' + name + '_validator.coffee')
