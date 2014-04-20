@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "Simple and highly extensible validation library",
   "main": "index.js",
+  "browserify": {
+    "transform": ["coffeeify"]
+  },
   "scripts": {
     "test": "./node_modules/.bin/barrier $(find test -name '*_test.coffee')"
   },
