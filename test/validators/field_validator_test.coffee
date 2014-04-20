@@ -12,7 +12,7 @@ describe "FieldValidator", ->
     it "fails when the validation fails on the field", (failValidator) ->
       validator = new FieldValidator('name', failValidator)
 
-      h.testFail(validator, {name: 'User'})
+      h.testFail(validator, {name: 'User'}, 'Error on field name: failed')
 
     it "passes when the validation passes", (passValidator) ->
       validator = new FieldValidator('name', passValidator)
@@ -27,8 +27,7 @@ describe "FieldValidator", ->
         h.testPass(validator, {})
 
       it "still runs the validation when the field is present", (validator) ->
-        h.testFail(validator, {name: null})
-        h.testFail(validator, {name: undefined})
-        h.testFail(validator, {name: 'value'})
-
-    describe "async validators", ->
+        h.testValidator validator, (pass, fail) ->
+          fail({name: null})
+          fail({name: undefined})
+          fail({name: 'value'})
