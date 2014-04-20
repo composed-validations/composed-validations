@@ -15,16 +15,15 @@ lazy 'asyncFailValidator', ->
   async: -> true
   test: (value) -> Promise.reject(new ValidationError('failed', value, this))
 
-extractClassName = (object) ->
-  defString = object.constructor.toString()
-  defString.match(/^function (\w+)/)[1]
+extractClassName = (object) -> object.constructor.name
 
 module.exports =
   _: require('../../lib/util.coffee')
 
   ValidationError: ValidationError
 
-  requireValidator: (name) -> require('../../lib/validators/' + name + '_validator.coffee')
+  requireLib: (lib) -> require('../../lib/' + lib)
+  requireValidator: (name) -> @requireLib("validators/#{name}_validator.coffee")
 
   testPass: (validator, value) ->
     message = "#{extractClassName validator} should pass value #{JSON.stringify(value)}"
