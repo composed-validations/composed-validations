@@ -4,6 +4,13 @@ FieldValidator = h.requireValidator('field')
 
 describe "FieldValidator", ->
   describe "#test", ->
+    it "fails if the field is falsy", (passValidator) ->
+      validator = new FieldValidator('name', passValidator)
+
+      h.testFail(validator, null, "Can't access field \"name\" on null")
+      h.testFail(validator, false, "Can't access field \"name\" on false")
+      h.testFail(validator, undefined, "Can't access field \"name\" on undefined")
+
     it "fails if the field is not present on the object", (passValidator) ->
       validator = new FieldValidator('name', passValidator)
 
