@@ -1,6 +1,8 @@
 module.exports =
   Promise: require('promise')
 
+  _: require('./util.coffee')
+
   ValidationError:       require('./error.coffee')
   AllValidator:          require('./validators/all_validator.coffee')
   DelegationalValidator: require('./validators/delegational_validator.coffee')
