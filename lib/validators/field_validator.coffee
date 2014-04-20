@@ -17,10 +17,10 @@ module.exports = class FieldValidator extends DelegationalValidator
     if @options.optional && !_.has(object, @field)
       return
 
-    unless object[@field]?
-      throw new ValidationError("Field #{@field} is not present on the object #{_.json object}", object, this)
-
     value = object[@field]
+
+    unless value
+      throw new ValidationError("Field #{@field} is not present on the object #{_.json object}", object, this)
 
     @runValidator value, (err) =>
       @throwError("Error on field #{@field}: #{err.message}", object, err, this) if err

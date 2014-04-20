@@ -19,6 +19,10 @@ module.exports =
 
   isValidator: (value) -> @isFunction(value?.test)
 
+  isArray: (value) ->
+    (value && typeof value == 'object' && typeof value.length == 'number' &&
+      toString.call(value) == '[object Array]') || false
+
   guardValidator: (validator) ->
     unless @isValidator(validator)
       throw new TypeError("#{@json validator} is not a valid validator")
