@@ -1,4 +1,6 @@
 h = require('./helper.coffee')
+sinon = require('sinon')
+Promise = require('promise')
 
 MultiValidator = h.requireValidator('multi')
 
@@ -28,54 +30,107 @@ describe "MultiValidator", ->
 
       expect(-> validator.add(asyncValidator)).not.throw()
 
-  describe "#test", ->
-    describe "sync validations", ->
-      describe "empty validator", ->
-        it "passes the test", (validator) ->
-          h.testPass(validator, {})
+  describe "#testSync", ->
+    it "returns a blank list when there are no errors", (validator) ->
+      expect(validator.testSync()).eql []
 
-      describe "given there is a failed validation", ->
-        it "fails the test", (validator, failValidator) ->
-          validator.add(failValidator)
+    it "collects errors from all failed validators", (validator, passValidator, failValidator) ->
+      validator.add(failValidator)
+      validator.add(passValidator)
+      validator.add(failValidator)
 
-          h.testFail(validator, {})
+      expect(validator.testSync()).length(2)
 
-      describe "given there is a passing validation", ->
-        it "passes the test", (validator, passValidator) ->
-          validator.add(passValidator)
+    it "must call the validator with the correct params", (validator, passValidator) ->
+      validator.add(passValidator)
 
-          h.testPass(validator, 'value')
-          expect(passValidator.test.calledWith('value')).true
+      validator.testSync('value')
 
-    describe "async validations", ->
-      lazy "validator", -> new MultiValidator(async: true)
+      expect(passValidator.test.calledWith('value')).true
 
-      describe "empty validator", ->
-        it "passes async", (validator) ->
-          h.testPassAsync(validator, {})
+    it "in case a non validation error is raised, it must be raised", (validator, passValidator, failValidator, errorValidator) ->
+      validator.add(failValidator)
+      validator.add(passValidator)
+      validator.add(errorValidator)
 
-      describe "given there is a failed validation", ->
-        it "rejects with the validation error", (validator, failValidator) ->
-          validator.add(failValidator)
+      expect(-> validator.testSync()).throw('error')
 
-          h.testFailAsync(validator, {})
+  describe "#testAsync", ->
+    lazy 'validator', -> new MultiValidator(async: true)
 
-      describe "given there is a passing validation", ->
-        it "passes the test", (validator, passValidator) ->
-          validator.add(passValidator)
+    it "returns a blank list when there are no errors", (validator) ->
+      validator.testAsync().then (errors) ->
+        expect(errors).eql []
 
-          h.testPassAsync(validator, 'value')
-          expect(passValidator.test.calledWith('value')).true
+    describe "working with async validations", ->
+      it "collects errors from all failed validators", (validator, asyncValidator, asyncFailValidator) ->
+        validator.add(asyncFailValidator)
+        validator.add(asyncValidator)
+        validator.add(asyncFailValidator)
 
-      describe "given there is an async failed validation", ->
-        it "rejects with the validation error", (validator, asyncFailValidator) ->
-          validator.add(asyncFailValidator)
+        validator.testAsync().then (errors) ->
+          expect(errors).length(2)
 
-          h.testFailAsync(validator, {})
+      it "must call the validator with the correct params", (validator, asyncValidator) ->
+        validator.add(asyncValidator)
 
-      describe "given there is a passing async validation", ->
-        it "passes the test", (validator, asyncValidator) ->
-          validator.add(asyncValidator)
-
-          h.testPassAsync(validator, 'value')
+        validator.testAsync('value').then ->
           expect(asyncValidator.test.calledWith('value')).true
+
+      it "in case a non validation error is raised, it must be raised", (validator, asyncValidator, asyncFailValidator, errorValidator) ->
+        validator.add(asyncFailValidator)
+        validator.add(asyncValidator)
+        validator.add(errorValidator)
+
+        expect(validator.testAsync()).hold.reject('error')
+
+    describe "working with sync validations", ->
+      it "collects errors from all failed validators", (validator, passValidator, failValidator) ->
+        validator.add(failValidator)
+        validator.add(passValidator)
+        validator.add(failValidator)
+
+        validator.testAsync().then (errors) ->
+          expect(errors).length(2)
+
+      it "must call the validator with the correct params", (validator, passValidator) ->
+        validator.add(passValidator)
+
+        validator.testAsync('value').then ->
+          expect(passValidator.test.calledWith('value')).true
+
+      it "in case a non validation error is raised, it must be raised", (validator, passValidator, failValidator, errorValidator) ->
+        validator.add(failValidator)
+        validator.add(passValidator)
+        validator.add(errorValidator)
+
+        expect(validator.testAsync()).hold.reject('error')
+
+  describe "#multiTest", ->
+    it "runs sync", ->
+      validator = new MultiValidator()
+      sinon.stub(validator, 'testSync').withArgs('value').returns(['error'])
+      handler = sinon.stub()
+
+      validator.multiTest('value', handler)
+
+      expect(handler.calledWith(['error'])).true
+
+    it "runs async", ->
+      validator = new MultiValidator(async: true)
+      sinon.stub(validator, 'testAsync').withArgs('value').returns(Promise.from(['error']))
+      handler = sinon.stub()
+
+      validator.multiTest('value', handler).then ->
+        expect(handler.calledWith(['error'])).true
+
+  describe "#test", ->
+    it "does nothing when no fails", (validator) ->
+      validator.multiTest = (value, handler) -> handler([])
+
+      h.testPass(validator, 'value')
+
+    it "fails when there is at least one error", (validator) ->
+      validator.multiTest = (value, handler) -> handler(['err'])
+
+      h.testFail(validator, 'value')

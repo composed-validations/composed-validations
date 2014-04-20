@@ -19,23 +19,43 @@ module.exports = class MultiValidator
     @validators.push(validator)
 
   test: (value) =>
+    @multiTest value, (errors) =>
+      throw new ValidationError("", value, this) if errors.length > 0
+
+  multiTest: (value, handler) =>
     if @async()
-      @testAsync(value)
+      @testAsync(value).then(handler)
     else
-      @testSync(value)
+      handler(@testSync(value))
 
   testSync: (value) =>
-    try
-      for validator in @validators
+    errors = []
+
+    for validator in @validators
+      try
         validator.test(value)
-    catch err
-      throw new ValidationError("", value, this)
+      catch err
+        @guardValidationError(err)
+        errors.push(err)
+
+    errors
 
   testAsync: (value) =>
-    results = _.map @validators, (v) -> _.lift(v.test)(value)
+    errors = []
 
-    Promise.all(results)
+    results = _.map @validators, (v) =>
+      _.lift(v.test)(value).then(
+        undefined
+        (err) =>
+          @guardValidationError(err)
+          errors.push(err)
+          null
+      )
+
+    Promise.all(results).then -> errors
 
   guardAsync: (validator) =>
     if validator.async?() == true && !@async()
       throw new Error("Can't add async validators into a sync MultiValitor, use the {sync: true} option to allow async validators to be added.")
+
+  guardValidationError: (err) => throw err unless err instanceof ValidationError

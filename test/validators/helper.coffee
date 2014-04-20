@@ -6,8 +6,9 @@ sinon = require('sinon')
 
 ValidationError = require('../../lib/error.coffee')
 
-lazy 'failValidator', -> test: (value) -> throw new ValidationError('failed', value, this)
 lazy 'passValidator', -> test: sinon.stub()
+lazy 'failValidator', -> test: (value) -> throw new ValidationError('failed', value, this)
+lazy 'errorValidator', -> test: (value) -> throw new Error('error')
 lazy 'asyncValidator', ->
   async: -> true
   test: sinon.stub().returns(Promise.resolve(null))
