@@ -1,6 +1,8 @@
 Promise = require('promise')
 _ = require('../lib/util.coffee')
 
+ValidationError = require('../lib/error.coffee')
+
 describe "Util", ->
   lazy "validator", -> test: ->
 
@@ -50,6 +52,18 @@ describe "Util", ->
 
     it "does nothing when it's valid", (validator) ->
       expect(-> _.guardValidator(validator)).not.throw()
+
+  describe "#guardValidationError", ->
+    it "throws the error if it's not a validation error", ->
+      expect(-> _.guardValidationError(new Error('boom'))).throw('boom')
+
+    it "doesn't throw an error if it's a ValidationError", ->
+      expect(-> _.guardValidationError(new ValidationError())).not.throw()
+
+    it "doesn't throw an error if it's a ValidationError descendent", ->
+      class CustomValidationError extends ValidationError
+
+      expect(-> _.guardValidationError(new CustomValidationError())).not.throw()
 
   describe "#contains", ->
     it "test if an element is present on a list", ->

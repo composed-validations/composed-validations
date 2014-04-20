@@ -33,7 +33,6 @@ module.exports = class DelegationalValidator
     callback(null, res)
 
   throwError: (message, value, err) =>
-    if err instanceof ValidationError
-      throw new DelegatedValidationError(message, value, err, this)
-    else
-      throw err
+    _.guardValidationError(err)
+
+    throw new DelegatedValidationError(message, value, err, this)

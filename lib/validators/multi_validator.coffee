@@ -35,7 +35,7 @@ module.exports = class MultiValidator
       try
         validator.test(value)
       catch err
-        @guardValidationError(err)
+        _.guardValidationError(err)
         errors.push(err)
 
     errors
@@ -47,7 +47,7 @@ module.exports = class MultiValidator
       _.lift(v.test)(value).then(
         undefined
         (err) =>
-          @guardValidationError(err)
+          _.guardValidationError(err)
           errors.push(err)
           null
       )
@@ -57,5 +57,3 @@ module.exports = class MultiValidator
   guardAsync: (validator) =>
     if validator.async?() == true && !@async()
       throw new Error("Can't add async validators into a sync MultiValitor, use the {sync: true} option to allow async validators to be added.")
-
-  guardValidationError: (err) => throw err unless err instanceof ValidationError
