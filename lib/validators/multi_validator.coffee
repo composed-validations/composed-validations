@@ -3,6 +3,15 @@ ValidationError = require('../error.coffee')
 
 Promise = require('promise')
 
+class MultiValidationError extends ValidationError
+  constructor: (message, value, validator, @errors) ->
+    super(message + "\n" + @errorMessages().join(''), value, validator)
+
+  errorMessages: =>
+    _.map(@errors, (err) =>
+      err.message
+    )
+
 module.exports = class MultiValidator
   constructor: (options = {}) ->
     @options = _.defaults options,
@@ -20,7 +29,7 @@ module.exports = class MultiValidator
 
   test: (value) =>
     @multiTest value, (errors) =>
-      throw new ValidationError("", value, this) if errors.length > 0
+      throw new MultiValidationError("You have error(s) on your data:", value, this, errors) if errors.length > 0
 
   multiTest: (value, handler) =>
     if @async()
