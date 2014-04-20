@@ -29,4 +29,4 @@ module.exports = class AllValidator extends DelegationalValidator
 
   guardList: (list) =>
     unless list?.length?
-      throw new ValidationError("#{JSON.stringify(list)} is not a list", list, this)
+      throw new ValidationError("#{_.json list} is not a list", list, this)

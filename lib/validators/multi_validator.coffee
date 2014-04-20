@@ -5,7 +5,7 @@ Promise = require('promise')
 
 class MultiValidationError extends ValidationError
   constructor: (message, value, validator, @errors) ->
-    super(message + "\n" + @errorMessages().join(''), value, validator)
+    super(message + "\n" + @errorMessages().join("\n"), value, validator)
 
   errorMessages: =>
     _.map(@errors, (err) =>

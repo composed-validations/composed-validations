@@ -9,6 +9,6 @@ describe "IncludeValidator", ->
         pass('valid')
         pass('stillValid')
 
-        fail('invalid')
+        fail('invalid', '"invalid" is not included on the list ["valid","stillValid"]')
         fail(['valid'])
         fail({})

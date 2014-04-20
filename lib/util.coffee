@@ -3,6 +3,8 @@ Promise = require('promise')
 ValidationError = require('./error.coffee')
 
 module.exports =
+  json: (obj) -> JSON.stringify(obj)
+
   defaults: (object, defaults) ->
     for key, value of object
       defaults[key] = value
@@ -19,7 +21,7 @@ module.exports =
 
   guardValidator: (validator) ->
     unless @isValidator(validator)
-      throw new TypeError("#{JSON.stringify(validator)} is not a valid validator")
+      throw new TypeError("#{@json validator} is not a valid validator")
 
   guardValidationError: (err) -> throw err unless err instanceof ValidationError
 
