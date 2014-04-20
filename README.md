@@ -8,11 +8,11 @@ Javascript validation library that makes sense.
 Index
 -----
 
-- Introduction
-- Basic Validations
-- Async Validations
-- Composed Validations
-- Built-in validators
+- [Introduction](#introduction)
+- [Basic Validations](#basic-validations)
+- [Async Validations](#async-validations)
+- [Composed Validations](#composed-validations-1)
+- [Built-in validators](#built-in-validators)
   - Leaf validators
     - PresenceValidator
     - RangeValidator
@@ -94,7 +94,7 @@ The point here is just to have you know about validators may return a `Promise` 
 We don't provide async validators, but we provide some mechanims for you to use them, we will talk more about that later
 on this doc.
 
-If you are not familiar with the `Promise` concept, this is a good place to start: [https://www.promisejs.org]()
+If you are not familiar with the `Promise` concept, this is a good place to start: [https://www.promisejs.org](https://www.promisejs.org)
 
 Composed Validations
 --------------------
