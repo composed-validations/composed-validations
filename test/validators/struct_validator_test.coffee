@@ -32,6 +32,14 @@ describe "Struct Validator", ->
         ['email', ['wrapped', 'email', passValidator]]
       ]
 
+    it "correctly wraps the error message if a string is given after the validator", (validator, failValidator) ->
+      validator.validate('name', failValidator, "Name can't be blank")
+
+      try
+        validator.test({})
+      catch err
+        expect(err.errorMessages()).eql ["Name can't be blank"]
+
   describe "#addAssociated", ->
     it "calls the regular add with the validator", (validator, passValidator) ->
       validator.add = sinon.spy()

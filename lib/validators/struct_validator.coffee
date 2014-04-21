@@ -1,6 +1,7 @@
 _ = require('../util.coffee')
 MultiValidator = require('./multi_validator.coffee')
 FieldValidator = require('./field_validator.coffee')
+RephraseValidator = require('./rephrase_validator.coffee')
 
 module.exports = class StructValidator extends MultiValidator
   constructor: ->
@@ -9,8 +10,13 @@ module.exports = class StructValidator extends MultiValidator
     @fieldValidators = {}
 
   validate: (fields..., validator) =>
+    if arguments.length > 2 and _.isString(validator)
+      errorMessage = validator
+      validator = fields.pop()
+
     for field in fields
       wrapped = @_wrapFieldValidator(field, validator)
+      wrapped = @_wrapErrorMessage(errorMessage, wrapped) if errorMessage
 
       @addAssociated(field, wrapped)
 
@@ -42,3 +48,4 @@ module.exports = class StructValidator extends MultiValidator
     validators
 
   _wrapFieldValidator: (field, validator) => new FieldValidator(field, validator)
+  _wrapErrorMessage: (message, validator) => new RephraseValidator(message, validator)
