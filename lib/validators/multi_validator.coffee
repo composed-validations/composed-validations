@@ -1,16 +1,8 @@
 _ = require('../util.coffee')
-ValidationError = require('../errors/validation_error.coffee')
+
+MultiValidationError = require('../errors/multi_validation_error.coffee')
 
 Promise = require('promise')
-
-class MultiValidationError extends ValidationError
-  constructor: (message, value, validator, @errors) ->
-    super(message + "\n" + @errorMessages().join("\n"), value, validator)
-
-  errorMessages: =>
-    _.map(@errors, (err) =>
-      err.message
-    )
 
 module.exports = class MultiValidator
   constructor: (options = {}) ->

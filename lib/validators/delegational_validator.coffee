@@ -1,9 +1,5 @@
 _ = require('../util.coffee')
-ValidationError = require('../errors/validation_error.coffee')
-
-class DelegatedValidationError extends ValidationError
-  constructor: (message, value, @childError, validator) ->
-    super(message, value, validator)
+DelegatedValidationError = require('../errors/delegated_validation_error.coffee')
 
 module.exports = class DelegationalValidator
   constructor: (@validator) -> _.guardValidator(@validator)
