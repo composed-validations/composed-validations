@@ -1,5 +1,3 @@
 #!/bin/bash
 
-browserify lib/browser.coffee -o composed-validations.js -t coffeeify
-
-echo "composed validations compiled"
+browserify lib/browser.coffee -o composed-validations.js
