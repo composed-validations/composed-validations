@@ -6,6 +6,7 @@ module.exports = class RephraseValidator extends DelegationalValidator
 
   test: (value) =>
     @runValidator value, (err) =>
-      err.message = @message
+      if err
+        err.message = @message
 
-      throw err
+        throw err

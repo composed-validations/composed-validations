@@ -11,3 +11,8 @@ describe "Rephrase Validator", ->
     catch err
       expect(err).eq failValidator.err
       expect(err.message).eq 'new error message'
+
+  it "passes when the contained validation passes", (passValidator) ->
+    validator = new RephraseValidator('', passValidator)
+
+    h.testPass(validator, {})
