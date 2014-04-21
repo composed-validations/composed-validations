@@ -23,7 +23,7 @@ describe "FieldValidator", ->
     it "fails when the validation fails on the field", (failValidator) ->
       validator = new FieldValidator('name', failValidator)
 
-      h.testFail(validator, {name: 'User'}, 'name failed')
+      h.testFail(validator, {name: 'User'}, 'Name failed')
 
     it "passes when the validation passes", (passValidator) ->
       validator = new FieldValidator('name', passValidator)

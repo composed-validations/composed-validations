@@ -131,3 +131,11 @@ describe "Util", ->
         fn = -> Promise.reject(new Error('err'))
 
         expect(_.lift(fn)()).hold.reject('err')
+
+  describe "#humanizeFieldName", ->
+    it "transforms the field name a more human form", ->
+      expect(_.humanizeFieldName('')).eq ''
+      expect(_.humanizeFieldName('Name')).eq 'Name'
+      expect(_.humanizeFieldName('name')).eq 'Name'
+      expect(_.humanizeFieldName('NAME')).eq 'Name'
+      expect(_.humanizeFieldName('password_confirmation')).eq 'Password confirmation'

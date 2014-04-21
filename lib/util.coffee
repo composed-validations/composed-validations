@@ -55,3 +55,10 @@ module.exports =
         Promise.resolve(fn(args...))
       catch err
         Promise.reject(err)
+
+  humanizeFieldName: (field) ->
+    if field.length > 0
+      field = field.replace(/_/g, ' ')
+      field = field.charAt(0).toUpperCase() + field.substr(1).toLowerCase()
+
+    field

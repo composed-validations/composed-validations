@@ -21,4 +21,4 @@ module.exports = class FieldValidator extends DelegationalValidator
     value = object[@field]
 
     @runValidator value, (err) =>
-      @throwError("#{@field} #{err.message}", object, err, this) if err
+      @throwError("#{_.humanizeFieldName @field} #{err.message}", object, err, this) if err
