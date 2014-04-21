@@ -25,10 +25,10 @@ describe "MultiValidator", ->
     it "throws an error when you try to add an async validator", (validator, asyncValidator) ->
       expect(-> validator.add(asyncValidator)).throw("Can't add async validators into a sync MultiValitor, use the {sync: true} option to allow async validators to be added.")
 
-    it "doesn't throw an error when you add an async validator to an async MultiValidator", (validator, asyncValidator) ->
+    it "doesn't throw an error when you add an async validator to an async MultiValidator and returns the validator", (validator, asyncValidator) ->
       validator.async = -> true
 
-      expect(-> validator.add(asyncValidator)).not.throw()
+      expect(validator.add(asyncValidator)).eq validator
 
   describe "#testSync", ->
     it "returns a blank list when there are no errors", (validator) ->
