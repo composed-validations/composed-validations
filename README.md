@@ -11,7 +11,7 @@ Index
 - [Introduction](#introduction)
 - [Basic Validations](#basic-validations)
 - [Async Validations](#async-validations)
-- [Composed Validations](#composed-validations-1)
+- [Composit Validations](#composit-validations)
 - [Built-in validators](#built-in-validators)
   - Leaf validators
     - PresenceValidator
@@ -43,9 +43,7 @@ validator.test(value);
 
 All of the validators responds to this interface, and each validator is a single small piece that just validates a
 single value. In order to validate complex values, you use `compositional validators` that will compose your complex
-validation. It follow the design pattern `Composite`, where a single or composite validators can be thread as the same
-thing, and what bounds them is the interface we just talked about. These ideas will become more clear as we go further
-on this documentation. Now let me show you the code!
+validation.
 
 Basic validations
 -----------------
@@ -96,7 +94,7 @@ on this doc.
 
 If you are not familiar with the `Promise` concept, this is a good place to start: [https://www.promisejs.org](https://www.promisejs.org)
 
-Composed Validations
+Composit Validations
 --------------------
 
 Validating values directly is nice, gives you a lot of flexibility, but getting real, it's just not enough...
