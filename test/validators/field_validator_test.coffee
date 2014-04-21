@@ -14,7 +14,11 @@ describe "FieldValidator", ->
     it "fails if the field is not present on the object", (passValidator) ->
       validator = new FieldValidator('name', passValidator)
 
-      h.testFail(validator, {}, 'Field name is not present on the object {}')
+      h.testValidator validator, (pass, fail) ->
+        fail({}, 'Field name is not present on the object {}')
+        pass(name: null, 'Field name is not present on the object {}')
+        pass(name: undefined, 'Field name is not present on the object {}')
+        pass(name: false, 'Field name is not present on the object {}')
 
     it "fails when the validation fails on the field", (failValidator) ->
       validator = new FieldValidator('name', failValidator)
