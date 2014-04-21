@@ -3,7 +3,7 @@ module.exports =
 
   _: require('./util.coffee')
 
-  ValidationError:       require('./errors/validation_error.coffee')
+
   AllValidator:          require('./validators/all_validator.coffee')
   DelegationalValidator: require('./validators/delegational_validator.coffee')
   FieldValidator:        require('./validators/field_validator.coffee')
@@ -14,3 +14,7 @@ module.exports =
   PresenceValidator:     require('./validators/presence_validator.coffee')
   RangeValidator:        require('./validators/range_validator.coffee')
   StructValidator:       require('./validators/struct_validator.coffee')
+
+  DelegatedValidationError: require('./errors/delegated_validation_error.coffee')
+  MultiValidationError:     require('./errors/multi_validation_error.coffee')
+  ValidationError:          require('./errors/validation_error.coffee')
