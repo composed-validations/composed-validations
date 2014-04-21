@@ -166,10 +166,10 @@ var val = require('composed-validations'),
     StructValidator = val.StructValidator;
 
 var addressValidator = new StructValidator()
-  .add('street', new PresenceValidator())
-  .add('zip', new FormatValidator(/\d{5}/) // silly zip format
-  .add('city', new PresenceValidator())
-  .add('state', new PresenceValidator());
+  .validate('street', new PresenceValidator())
+  .validate('zip', new FormatValidator(/\d{5}/) // silly zip format
+  .validate('city', new PresenceValidator())
+  .validate('state', new PresenceValidator());
 
 addressValidator.test({
   street: 'street name',
@@ -197,11 +197,11 @@ var val = require('composed-validations'),
 addressValidator = require('./address_validator');
 
 userValidator = new StructValidator();
-userValidator.add('name', new PresenceValidator());
-userValidator.add('age', new RangeValidator(0, 200));
-userValidator.add('userType', new IncludeValidator(['member', 'admin']));
+userValidator.validate('name', new PresenceValidator());
+userValidator.validate('age', new RangeValidator(0, 200));
+userValidator.validate('userType', new IncludeValidator(['member', 'admin']));
 // in fact, the address validator is just another composed validator, so just send it!
-userValidator.add('address', addressValidator);
+userValidator.validate('address', addressValidator);
 
 userValidator.test({
   name: 'The Guy',
