@@ -1,6 +1,6 @@
 Promise = require('promise')
 
-ValidationError = require('./error.coffee')
+ValidationError = require('./errors/validation_error.coffee')
 
 module.exports =
   json: (obj) -> JSON.stringify(obj)

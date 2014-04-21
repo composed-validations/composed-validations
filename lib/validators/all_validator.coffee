@@ -1,7 +1,7 @@
 Promise = require('promise')
 
 _ = require('../util.coffee')
-ValidationError = require('../error.coffee')
+ValidationError = require('../errors/validation_error.coffee')
 DelegationalValidator = require('./delegational_validator.coffee')
 MultiValidator = require('./multi_validator.coffee')
 

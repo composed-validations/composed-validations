@@ -1,4 +1,4 @@
-ValidationError = require('../error.coffee')
+ValidationError = require('../errors/validation_error.coffee')
 
 DelegationalValidator = require('./delegational_validator.coffee')
 

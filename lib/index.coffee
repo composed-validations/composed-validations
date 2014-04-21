@@ -3,7 +3,7 @@ module.exports =
 
   _: require('./util.coffee')
 
-  ValidationError:       require('./error.coffee')
+  ValidationError:       require('./errors/validation_error.coffee')
   AllValidator:          require('./validators/all_validator.coffee')
   DelegationalValidator: require('./validators/delegational_validator.coffee')
   FieldValidator:        require('./validators/field_validator.coffee')

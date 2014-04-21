@@ -1,5 +1,5 @@
 _ = require('../util.coffee')
-ValidationError = require('../error.coffee')
+ValidationError = require('../errors/validation_error.coffee')
 
 trim = (string) -> string.replace(/^\s+|\s+$/g, '')
 

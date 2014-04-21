@@ -4,7 +4,7 @@ require('../../index')
 Promise = require('promise')
 sinon = require('sinon')
 
-ValidationError = require('../../lib/error.coffee')
+ValidationError = require('../../lib/errors/validation_error.coffee')
 
 lazy 'passValidator', -> test: sinon.stub()
 lazy 'failValidator', ->

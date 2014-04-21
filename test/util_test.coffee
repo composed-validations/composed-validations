@@ -1,7 +1,7 @@
 Promise = require('promise')
 _ = require('../lib/util.coffee')
 
-ValidationError = require('../lib/error.coffee')
+ValidationError = require('../lib/errors/validation_error.coffee')
 
 describe "Util", ->
   lazy "validator", -> test: ->
