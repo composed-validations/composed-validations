@@ -8,18 +8,24 @@ module.exports = class StructValidator extends MultiValidator
 
     @fieldValidators = {}
 
-  addField: (field, validator) =>
-    wrapped = @_wrapFieldValidator(field, validator)
+  validate: (fields..., validator) =>
+    for field in fields
+      wrapped = @_wrapFieldValidator(field, validator)
 
-    @addAssociated(field, wrapped)
+      @addAssociated(field, wrapped)
 
-  addAssociated: (field, validator) =>
+    this
+
+  addAssociated: (fields..., validator) =>
     @add(validator)
 
-    @addFieldValidator(field, validator)
+    for field in fields
+      @addFieldValidator(field, validator)
 
-  addFieldValidator: (fields, validator) =>
-    fields = [fields] unless _.isArray(fields)
+    this
+
+  addFieldValidator: (fields..., validator) =>
+    _.guardValidator(validator)
 
     for field in fields
       @fieldValidators[field] ||= new MultiValidator()

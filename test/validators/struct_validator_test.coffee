@@ -12,14 +12,25 @@ describe "Struct Validator", ->
 
       expect(validator.async()).true
 
-  describe "#addField", ->
+  describe "#validate", ->
     it "calls the addAssociated with the field and the validator wrapped", (validator, passValidator) ->
       validator._wrapFieldValidator = (field, v) -> ['wrapped', field, v]
 
       validator.addAssociated = sinon.spy()
-      validator.addField('name', passValidator)
+      validator.validate('name', passValidator)
 
       expect(validator.addAssociated.calledWith('name', ['wrapped', 'name', passValidator])).true
+
+    it "can add same validation on multiple fields", (validator, passValidator) ->
+      validator._wrapFieldValidator = (field, v) -> ['wrapped', field, v]
+
+      validator.addAssociated = sinon.spy()
+      validator.validate('name', 'email', passValidator)
+
+      expect(validator.addAssociated.args).eql [
+        ['name', ['wrapped', 'name', passValidator]]
+        ['email', ['wrapped', 'email', passValidator]]
+      ]
 
   describe "#addAssociated", ->
     it "calls the regular add with the validator", (validator, passValidator) ->
@@ -30,9 +41,12 @@ describe "Struct Validator", ->
 
     it "calls to add the field validator", (validator, passValidator) ->
       validator.addFieldValidator = sinon.spy()
-      validator.addAssociated('name', passValidator)
+      validator.addAssociated('name', 'email', passValidator)
 
-      expect(validator.addFieldValidator.calledWith('name', passValidator)).true
+      expect(validator.addFieldValidator.args).eql [
+        ['name', passValidator]
+        ['email', passValidator]
+      ]
 
   describe "#addFieldValidator", ->
     it "adds the validator to field validator", (validator, passValidator, failValidator) ->
@@ -45,7 +59,7 @@ describe "Struct Validator", ->
       expect(validator.fieldValidators['name'].validators).eql [passValidator, failValidator]
 
     it "can add same validation to multiple fields at once", (validator, passValidator) ->
-      validator.addFieldValidator(['password', 'password_confirmation'], passValidator)
+      validator.addFieldValidator('password', 'password_confirmation', passValidator)
 
       expect(validator.fieldValidators['password'].validators).eql [passValidator]
       expect(validator.fieldValidators['password_confirmation'].validators).eql [passValidator]
@@ -58,8 +72,8 @@ describe "Struct Validator", ->
       onOtherFieldValidator = test: sinon.stub()
       onFieldByAssociationValidator = test: sinon.stub()
 
-      validator.addField('name', onFieldValidator)
-      validator.addField('other', onOtherFieldValidator)
+      validator.validate('name', onFieldValidator)
+      validator.validate('other', onOtherFieldValidator)
       validator.addAssociated('name', onFieldByAssociationValidator)
 
       validator.testField('name', name: 'value')
