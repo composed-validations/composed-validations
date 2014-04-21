@@ -108,9 +108,9 @@ var val = require('composed-validations'),
     IncludeValidator = val.IncludeValidator,
     MultiValidator = val.MultiValidator;
 
-var validator = new MultiValidator();
-validator.add(new PresenceValidator());
-validator.add(new IncludeValidator(['optionA', 'optionB']);
+var validator = new MultiValidator()
+  .add(new PresenceValidator())
+  .add(new IncludeValidator(['optionA', 'optionB']);
 
 validator.test(null); // will raise an error that has information from both failures
 ```
@@ -197,11 +197,11 @@ var val = require('composed-validations'),
 addressValidator = require('./address_validator');
 
 userValidator = new StructValidator();
-userValidator.validate('name', new PresenceValidator());
-userValidator.validate('age', new RangeValidator(0, 200));
-userValidator.validate('userType', new IncludeValidator(['member', 'admin']));
-// in fact, the address validator is just another composed validator, so just send it!
-userValidator.validate('address', addressValidator);
+  .validate('name', new PresenceValidator())
+  .validate('age', new RangeValidator(0, 200))
+  .validate('userType', new IncludeValidator(['member', 'admin']))
+  // in fact, the address validator is just another composed validator, so just send it!
+  .validate('address', addressValidator);
 
 userValidator.test({
   name: 'The Guy',
