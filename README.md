@@ -97,15 +97,49 @@ If you are not familiar with the `Promise` concept, this is a good place to star
 Composit Validations
 --------------------
 
-Validating values directly is nice, gives you a lot of flexibility, but getting real, it's just not enough...
+Ok, now that you got the basics, let's go a step further, we are going to get into object fields validations, but before
+that, let's first understand what "complex multi-field validations" are about; what happens when you do a complex
+validation is actually just having many validations that runs togheter. And for multi validations running togheter,
+let's introduce the `MultiValidator`:
 
-Usually you have hole structures of data, with multiple fields, sometimes deep nesting on objects, and you need to get
-all this stuff to be validated togheter. This is when the composed validators come to rescue.
+```javascript
+var val = require('composed-validations'),
+    PresenceValidator = val.PresenceValidator,
+    IncludeValidator = val.IncludeValidator,
+    MultiValidator = val.MultiValidator;
 
-The idea of composed validators is: they are just validators, but instead of really validating stuff, what they do is
-structural configuration of how the validators should be applied.
+var validator = new MultiValidator();
+validator.add(new PresenceValidator());
+validator.add(new IncludeValidator(['optionA', 'optionB']);
 
-Enough talk, let's see an example on how to validate a complex object:
+validator.test(null); // will raise an error that has information from both failures
+```
+
+The example above is silly because the IncludeValidator would reject the null anyway, but I hope you understand the
+point being made, that is, you can have multiple validations happening togheter into a given value. So, what about
+objects? Objects are just values as strings, lists or any other... We just need a way to target specific parts of the
+object, and for that we have the `FieldValidator`:
+
+```javascript
+var val = require('composed-validations'),
+    PresenceValidator = val.PresenceValidator,
+    FieldValidator = val.FieldValidator;
+
+// let's create a PresenceValidator, that is wrapped by a FieldValidator
+var validator = new FieldValidator('name', new PresenceValidator());
+
+validator.test(null); // will raise an error because it cannot access fields on falsy values
+validator.test({age: 15}); // will raise an error because the field 'name' is not present on the object
+validator.test({name: null}); // this time it will fail because the PresenceValidator will not allow the null
+validator.test({name: "Mr White"}); // you think it will pass? "You are god damn right!"
+```
+
+So, know we know 2 things:
+
+1. We can run multiple validations togheter
+2. We can use FieldValidator to validates specific fields on the object
+
+Do the math, and you will realise you can validate complex objects as:
 
 ```javascript
 var val = require('composed-validations'),
@@ -113,59 +147,61 @@ var val = require('composed-validations'),
     FieldValidator = val.FieldValidator,
     MultiValidator = val.MultiValidator;
 
-addressValidator = new MultiValidator();
-addressValidator.add(new FieldValidator('street', new PresenceValidator());
-addressValidator.add(new FieldValidator('zip', new PresenceValidator());
-addressValidator.add(new FieldValidator('city', new PresenceValidator());
-addressValidator.add(new FieldValidator('state', new PresenceValidator());
-// the next field is optional, but if the latlong is present it will be checked
-// for more details on what that means check the FieldValidator documentation
-addressValidator.add(new FieldValidator('latlong', new PresenceValidator(), {optional: true}));
+var validator = new MultiValidator()
+  .add(new FieldValidator('name', new PresenceValidator())
+  .add(new FieldValidator('email', new PresenceValidator());
+
+validator.test({name: "cgp", email: "hello@internet.com"});
+```
+
+Nice hum? Both you are probably thinking "oh boy it's verbose"... And we agree, also, this generic way of handling
+fields is great in terms of extensibility, but is not very friendly when you trying to get information about problems
+on specific fields, or if you want to run tests on a single field instead of running them all. And that's why the
+`MultiValidator` is just the beginning, there are other more specific "multi-validation" classes to help you out. For
+now let's take a look at the one you probably gonna use the most, the `StructValidator`:
+
+```javascript
+var val = require('composed-validations'),
+    PresenceValidator = val.PresenceValidator,
+    StructValidator = val.StructValidator;
+
+var addressValidator = new StructValidator()
+  .add('street', new PresenceValidator())
+  .add('zip', new FormatValidator(/\d{5}/) // silly zip format
+  .add('city', new PresenceValidator())
+  .add('state', new PresenceValidator());
 
 addressValidator.test({
   street: 'street name',
   zip: '51235',
   city: 'Tustin',
   state: 'CA'
-}); // will pass, all is valid, latlong is not on data and it's optional, so all good
+}); // test all!
 
-addressValidator.test({
-  street: 'street name',
-  zip: '51235',
-  city: 'Tustin',
-  state: 'CA',
-  latlong: null
-}); // this will fail, this time latlong is present, but it is invalid, so, BOOM!
+addressValidator.testField('street'); // this will run only the tests that targets the 'street' field
 ```
 
-Ok, that we introduced two new important validators here, the `MultiValidator` and the `FieldValidator`. The
-`MultiValidator` makes possible to run multiple validations toghether, this is the first piece in order to handle
-multiple complex object validations, you just add the validators that you need, and when you run `test(value)` on it
-it will dispatch all of them. About how they are dispatched, it actually has many different strategies on how it does
-that, for more information check the `MultiValidator` reference.
+The `StructValidator` is just an extension of `MultiValidator` you can still use the regular `add` method, it's just
+that `StructValidator` wraps a lot of knowledge about `struct` type data, so it will do the hard work so you don't have
+to.
 
-So note that validators that go strait into the `MultiValidator` will receive the full object to validates, when you
-want go into a specific field the `FieldValidator` comes to rescue, it will narrow the context of it's contained
-validator to a single field of the object. When you master the `MultiValidator` and the `FieldValidator`, you can define
-really complex validation schemes just combining them, to the infinite and beyond!
-
-Let's get it to the next level, let's compose nested validations!
+And going further to make sure you understand the power of composing validations, check this out:
 
 ```javascript
 var val = require('composed-validations'),
     PresenceValidator = val.PresenceValidator,
-    FieldValidator = val.FieldValidator,
-    MultiValidator = val.MultiValidator;
+    IncludeValidator = val.IncludeValidator,
+    StructValidator = val.StructValidator;
 
 // let's say this will import the validator from the previous example
 addressValidator = require('./address_validator');
 
-userValidator = new MultiValidator();
-userValidator.add(new FieldValidator('name', new PresenceValidator());
-userValidator.add(new FieldValidator('age', new RangeValidator(0, 200));
-userValidator.add(new FieldValidator('userType', new IncludeValidator(['member', 'admin']));
+userValidator = new StructValidator();
+userValidator.add('name', new PresenceValidator());
+userValidator.add('age', new RangeValidator(0, 200));
+userValidator.add('userType', new IncludeValidator(['member', 'admin']));
 // in fact, the address validator is just another composed validator, so just send it!
-userValidator.add(new FieldValidator('address', addressValidator));
+userValidator.add('address', addressValidator);
 
 userValidator.test({
   name: 'The Guy',
@@ -179,6 +215,11 @@ userValidator.test({
   }
 }); // and there you have it, all validations will go into the right places!
 ```
+
+And that's what composed validations is about, there still a lot that wasn't covered here, things like mixing sync and
+async validations into multi validators, making fields optional, replacing error messages... Oh boy that's still a lot
+that you can know about this library, check each validator specific documentation for details on each feature for more
+details.
 
 Built-in Validators
 -------------------
