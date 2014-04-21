@@ -6,7 +6,7 @@ trim = (string) -> string.replace(/^\s+|\s+$/g, '')
 module.exports = class PresenceValidator
   test: (value) =>
     unless @normalize(value)
-      throw new ValidationError("#{_.json value} is blank", value, this)
+      throw new ValidationError("can't be blank", value, this)
 
   normalize: (value) =>
     if _.isString(value)

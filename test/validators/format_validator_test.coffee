@@ -10,7 +10,7 @@ describe "FormatValidator", ->
         pass('51')
         pass('a3c')
 
-        fail('abc')
+        fail('abc', 'format is not valid')
         fail(null)
         fail(undefined)
         fail(false)

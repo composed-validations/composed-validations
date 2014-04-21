@@ -5,4 +5,4 @@ module.exports = class FormatValidator
 
   test: (value) =>
     unless @format.exec(value)
-      throw new ValidationError("#{value} doesn't match with #{@format}", value, this)
+      throw new ValidationError("format is not valid", value, this)

@@ -13,7 +13,7 @@ describe "RangeValidator", ->
         pass(0)
         pass(30)
 
-        fail(-6)
-        fail(33)
-        fail(-30)
-        fail(50)
+        fail(-6, 'needs to be bigger than -5')
+        fail(33, 'needs to be lower than 32')
+        fail(-30, 'needs to be bigger than -5')
+        fail(50, 'needs to be lower than 32')
