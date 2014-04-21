@@ -28,7 +28,7 @@ module.exports = class StructValidator extends MultiValidator
     _.guardValidator(validator)
 
     for field in fields
-      @fieldValidators[field] ||= new MultiValidator()
+      @fieldValidators[field] ||= new MultiValidator(@options)
       @fieldValidators[field].add(validator)
 
     this

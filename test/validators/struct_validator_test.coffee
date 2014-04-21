@@ -49,6 +49,12 @@ describe "Struct Validator", ->
       ]
 
   describe "#addFieldValidator", ->
+    it "correctly initiates the sub validator with the given options", (passValidator) ->
+      validator = new StructValidator(async: true)
+      validator.addFieldValidator('name', passValidator)
+
+      expect(validator.validatorForField('name').options).eql async: true
+
     it "adds the validator to field validator", (validator, passValidator, failValidator) ->
       validator.addFieldValidator('name', passValidator)
 
