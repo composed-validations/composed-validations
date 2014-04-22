@@ -3,6 +3,8 @@ MultiValidator = require('./multi_validator.coffee')
 FieldValidator = require('./field_validator.coffee')
 RephraseValidator = require('./rephrase_validator.coffee')
 
+StructValidationError = require('../errors/struct_validation_error.coffee')
+
 module.exports = class StructValidator extends MultiValidator
   constructor: ->
     super
@@ -21,6 +23,10 @@ module.exports = class StructValidator extends MultiValidator
       @addAssociated(field, wrapped)
 
     this
+
+  test: (value) =>
+    @multiTest value, (errors) =>
+      throw new StructValidationError("You have error(s) on your struct:", value, this, errors) if errors.length > 0
 
   addAssociated: (fields..., validator) =>
     @add(validator)

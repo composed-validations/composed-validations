@@ -1,6 +1,7 @@
 h = require('./helper.coffee')
 sinon = require('sinon')
 
+ValidationError = h.ValidationError
 StructValidator = h.requireValidator('struct')
 
 describe "Struct Validator", ->
@@ -79,6 +80,24 @@ describe "Struct Validator", ->
       expect(validator.fieldValidators['password_confirmation'].validators).eql [passValidator]
 
   describe "#test", ->
+    describe "struct errors", ->
+      it "contains the errors grouped by field", (validator) ->
+        fail1 = test: (value) -> throw new ValidationError("fail1", value, fail1)
+        fail2 = test: (value) -> throw new ValidationError("fail2", value, fail2)
+        fail3 = test: (value) -> throw new ValidationError("fail3", value, fail3)
+
+        validator.addAssociated('name', 'email', fail1)
+        validator.addAssociated('email', fail2)
+        validator.addAssociated('name', 'address', fail3)
+
+        try
+          validator.test({})
+        catch err
+          fetchMessage = (obj) -> obj.message
+
+          expect(err.fieldErrors.name.map(fetchMessage), 'errors on name').eql ['fail1', 'fail3']
+          expect(err.fieldErrors.email.map(fetchMessage), 'errors on email').eql ['fail1', 'fail2']
+          expect(err.fieldErrors.address.map(fetchMessage), 'errors on address').eql ['fail3']
 
   describe "#testField", ->
     it "runs only the validators associated with a given field", (validator) ->

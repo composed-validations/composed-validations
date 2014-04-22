@@ -8,13 +8,18 @@ ValidationError = require('../../lib/errors/validation_error.coffee')
 
 lazy 'passValidator', -> test: sinon.stub()
 lazy 'failValidator', ->
-  error = new ValidationError('failed', null, this)
+  error = new ValidationError('failed', null, null)
 
-  test: (value) ->
-    error.value = value
-    throw error
+  validator =
+    test: (value) ->
+      error.value = value
+      throw error
 
-  err: error
+    err: error
+
+  error.validator = validator
+
+  validator
 
 lazy 'errorValidator', -> test: (value) -> throw new Error('error')
 lazy 'asyncValidator', ->
