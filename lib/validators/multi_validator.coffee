@@ -47,7 +47,7 @@ module.exports = class MultiValidator
     errors = []
 
     results = _.map @validators, (v) =>
-      _.lift(v.test)(value).then(
+      _.lift((value) -> v.test(value))(value).then(
         undefined
         (err) =>
           _.guardValidationError(err)
