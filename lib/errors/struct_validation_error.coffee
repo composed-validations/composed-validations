@@ -7,10 +7,18 @@ module.exports = class StructValidationError extends MultiValidationError
     @indexFieldErros()
 
   indexFieldErros: =>
+    @generalErrors = []
     @fieldErrors = {}
 
     for err in @errors
+      assigned = false
+
       for field, multiVal of @validator.fieldValidators
         if multiVal.validators.indexOf(err.validator) > -1
           @fieldErrors[field] ||= []
           @fieldErrors[field].push(err)
+          assigned = true
+
+      @generalErrors.push(err) unless assigned
+
+    this

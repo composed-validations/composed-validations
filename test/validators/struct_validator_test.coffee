@@ -81,14 +81,16 @@ describe "Struct Validator", ->
 
   describe "#test", ->
     describe "struct errors", ->
-      it "contains the errors grouped by field", (validator) ->
+      it "contains the errors grouped by field and general errors", (validator) ->
         fail1 = test: (value) -> throw new ValidationError("fail1", value, fail1)
         fail2 = test: (value) -> throw new ValidationError("fail2", value, fail2)
         fail3 = test: (value) -> throw new ValidationError("fail3", value, fail3)
+        fail4 = test: (value) -> throw new ValidationError("fail3", value, fail4)
 
         validator.addAssociated('name', 'email', fail1)
         validator.addAssociated('email', fail2)
         validator.addAssociated('name', 'address', fail3)
+        validator.add(fail4)
 
         try
           validator.test({})
@@ -98,6 +100,7 @@ describe "Struct Validator", ->
           expect(err.fieldErrors.name.map(fetchMessage), 'errors on name').eql ['fail1', 'fail3']
           expect(err.fieldErrors.email.map(fetchMessage), 'errors on email').eql ['fail1', 'fail2']
           expect(err.fieldErrors.address.map(fetchMessage), 'errors on address').eql ['fail3']
+          expect(err.generalErrors.map(fetchMessage), 'errors on address').eql ['fail3']
 
   describe "#testField", ->
     it "runs only the validators associated with a given field", (validator) ->
