@@ -13,21 +13,22 @@ Index
 - [Async Validations](#async-validations)
 - [Composit Validations](#composit-validations)
 - [Built-in validators](#built-in-validators)
-  - Leaf validators
-    - PresenceValidator
-    - RangeValidator
-    - IncludeValidator
-    - TypeValidator
-    - InstanceOfValidator
-  - Compositional validators
-    - NegateValidator
-    - FieldValidator
-    - MultiValidator
-    - ListValidator
-    - MultifieldValidator
-- Creating custom validators
-  - creating sync validators
-  - creating async validators
+  - [Leaf Validators](#leaf-validators)
+    - [PresenceValidator](#presencevalidator)
+    - [FormatValidator](#formatvalidator)
+    - [RangeValidator](#rangevalidator)
+    - [IncludeValidator](#includevalidator)
+  - [Multi Validators](#multi-validators)
+    - [MultiValidator](#multivalidator)
+    - [StructValidator](#structvalidator)
+  - [Delegational Validators](#delegational-validators)
+    - [FieldValidator](#fieldvalidator)
+    - [NegateValidator](#negatevalidator)
+    - [AllValidator](#allvalidator)
+    - [RephraseValidator](#rephrasevalidator)
+- [Creating custom validators](#creating-custom-validators)
+  - [Creating synchronous validators](#creating-synchronous-validators)
+  - [Creating asynchronous validators](#creating-asynchronous-validators)
 - Case Study: validating user signup on server and client side with same configuration
 
 Introduction
@@ -225,6 +226,86 @@ Built-in Validators
 -------------------
 
 This section documents each single validator on the framework.
+
+First, I'll give you the picture of what the class struct looks like:
+
+![Composed Validations Diagram](https://dl.dropboxusercontent.com/u/1772210/composed_validations.png)
+
+For the documentation, we gonna separate the validators in three categories:
+
+- [Leaf Validators](#leaf-validators): those are the validators that operates on most simple values
+- [Multi Validators](#multi-validators): those are structural validators that helps you to do multiple validations at once
+- [Delegational Validators](#delegational-validators): those are structural validators that will take one other validator and do some kind of structuring on the validator's behavior
+
+Leaf Validators
+---------------
+
+PresenceValidator
+------------------
+
+This validator with check if the given value is present.
+
+### Constructor
+
+```javascript
+new PresenceValidator();
+```
+
+### Example
+
+```javascript
+var validator = new PresenceValidator();
+
+// those will throw an error
+validator.test(undefined);
+validator.test(false);
+validator.test(null);
+validator.test("");
+validator.test("   "); // empty spaces still count as blank
+
+// those are valid, and will not throw an error
+validator.test("ok");
+validator.test({});
+```
+
+FormatValidator
+----------------
+
+IncludeValidator
+-----------------
+
+RangeValidator
+---------------
+
+
+Multi Validators
+----------------
+
+MultiValidator
+---------------
+
+StructValidator
+----------------
+
+
+Delegational Validators
+-----------------------
+
+DelegationalValidator
+----------------------
+
+FieldValidator
+---------------
+
+NegateValidator
+----------------
+
+AllValidator
+-------------
+
+RephraseValidator
+-----------------
+
 
 Warning
 -------
