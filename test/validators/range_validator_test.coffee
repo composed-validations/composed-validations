@@ -3,6 +3,10 @@ h = require('./helper.coffee')
 RangeValidator = h.requireValidator('range')
 
 describe "RangeValidator", ->
+  describe "#constructor", ->
+    it "raises an error if the min value is lower than the max", ->
+      expect(-> new RangeValidator(3, 1)).throw("Range Validator: input min (3) is bigger than the max (1)")
+
   describe "#test", ->
     it "correctly validates if the value in on the defined range", ->
       h.testValidator new RangeValidator(-5, 32), (pass, fail) ->

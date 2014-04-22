@@ -3,6 +3,7 @@ ValidationError = require('../errors/validation_error.coffee')
 
 module.exports = class RangeValidator
   constructor: (@min, @max) ->
+    throw new Error("Range Validator: input min (#{@min}) is bigger than the max (#{@max})") if @min > @max
 
   test: (value) =>
     if value < @min
