@@ -11,7 +11,7 @@ Index
 - [Introduction](#introduction)
 - [Basic Validations](#basic-validations)
 - [Async Validations](#async-validations)
-- [Composit Validations](#composit-validations)
+- [Composing Validations](#composing-validations)
 - [Built-in validators](#built-in-validators)
   - [Leaf Validators](#leaf-validators)
     - [PresenceValidator](#presencevalidator)
@@ -95,7 +95,7 @@ on this doc.
 
 If you are not familiar with the `Promise` concept, this is a good place to start: [https://www.promisejs.org](https://www.promisejs.org)
 
-Composit Validations
+Composing Validations
 --------------------
 
 Ok, now that you got the basics, let's go a step further, we are going to get into object fields validations, but before
@@ -243,6 +243,8 @@ Leaf Validators
 PresenceValidator
 ------------------
 
+[Source](https://github.com/wilkerlucio/composed-validations/blob/master/lib/validators/presence_validator.coffee)
+
 This validator with check if the given value is present.
 
 ### Constructor
@@ -271,12 +273,75 @@ validator.test({});
 FormatValidator
 ----------------
 
+[Source](https://github.com/wilkerlucio/composed-validations/blob/master/lib/validators/format_validator.coffee)
+
+This validator tests a value against a [Regular Expression](https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions).
+
+### Constructor
+
+```javascript
+new FormatValidator(RegExp format);
+```
+
+### Example
+
+```javascript
+var validator = new FormatValidator(/\d+/);
+
+validator.test('ab12'); // ok
+validaotr.test('abc'); // error! doesn't match the format!
+```
+
 IncludeValidator
 -----------------
+
+[Source](https://github.com/wilkerlucio/composed-validations/blob/master/lib/validators/include_validator.coffee)
+
+This validator tests a value against a pre-defined list of options.
+
+### Constructor
+
+```javascript
+new IncludeValidator(Array options);
+```
+
+### Example
+
+```javascript
+var validator = new IncludeValidator(['one', 'two']);
+
+validator.test('one'); // ok
+validator.test('two'); // ok
+validator.test('three'); // error, three is not included on the options
+```
 
 RangeValidator
 ---------------
 
+[Source](https://github.com/wilkerlucio/composed-validations/blob/master/lib/validators/range_validator.coffee)
+
+This validator if a value is included into a given range.
+
+### Constructor
+
+```javascript
+new RangeValidator(min, max);
+```
+
+Remember that `min` and `max` can be pretty much anything, it will work on numbers, but also on strings.
+
+The validator will raise an error on construction if you your `min` is bigger than `max`.
+
+### Example
+
+```javascript
+var validator = new RangeValidator(-3, 12);
+
+validator.test(-3); // ok, still on the range
+validator.test(-4); // error
+validator.test(5); // ok
+validator.test(13); // error
+```
 
 Multi Validators
 ----------------
