@@ -9,6 +9,7 @@ Index
 -----
 
 - [Introduction](#introduction)
+- [Install](#install)
 - [Basic Validations](#basic-validations)
 - [Async Validations](#async-validations)
 - [Composing Validations](#composing-validations)
@@ -45,6 +46,17 @@ validator.test(value);
 All of the validators responds to this interface, and each validator is a single small piece that just validates a
 single value. In order to validate complex values, you use `compositional validators` that will compose your complex
 validation.
+
+Install
+-------
+
+Currently we ship the library in two formats, you can use the `NPM` version:
+
+```
+npm install -S composed-validations
+```
+
+Or you can [download the browser version](https://raw.githubusercontent.com/wilkerlucio/composed-validations/master/composed-validations.js)
 
 Basic validations
 -----------------
