@@ -361,9 +361,188 @@ Multi Validators
 MultiValidator
 ---------------
 
+This validator enables you to create a group of validations that will run in order to validate a single value.
+
+### Constructor
+
+```javascript
+new MultiValidator({
+  async: false
+});
+```
+
+The object with the options on constructor is optional.
+
+Available options:
+
+- `async`: if you have ANY async validators into your `MultiValidator` you must pass this option as `true`, otherwise
+when you try to add an `async` validator it will raise an error. The reason for that is that in order to mix sync and
+async validators, we must convert all the validators to an async form, also, it changes the way the errors are thrown.
+When you do a sync validation it will throw the errors right way, on the async scenario they will be dispatched as
+`Promise` errors. This flag is to prevent you to use the wrong interface by mistake, so, if you need async on your
+`MultiValidator`, send it as `true`.
+
+### Registerind validators
+
+#### `add(validator)`
+
+This function will register a new validator in the list of validators that are going to run. Remember that all child
+validators will run, what I mean is, it will not stop on the first failure, when a failure occurs it will register it
+and keep going to run the rest of the validators, in the end, if there are errors, all of them will be available for
+you into the error object (also, in case of async, the validators will run in parallel).
+
+### Example
+
+A sync example:
+
+```javascript
+var validator = new MultiValidator();
+
+validator.add(new MinValidator(2));
+validator.add(new MaxValidator(5));
+
+validator.test(2); // ok
+
+try {
+  validator.test(-1);
+} catch (err) {
+  err.message; // a message combining the errors descriptions, good for debug, bad for showing to the user
+  err.errors; // a list with each error raised from the validators
+}
+```
+
+An async example:
+
+```javascript
+var validator = new MultiValidator({async: true});
+
+validator.add(new PresenceValidator());
+validator.add(new SomeAsyncValidator());
+
+validator.test(function() {
+  // all ok, do your thing
+}, function(err) {
+  err.message; // a message combining the errors descriptions, good for debug, bad for showing to the user
+  err.errors; // a list with each error raised from the validators
+});
+```
+
 StructValidator
 ----------------
 
+This validator is an extension of the [MultiValidator](#multivalidator), it has all the features available there, plus
+a few more.
+
+### Constructor
+
+```javascript
+new StructValidator({
+  async: false
+});
+```
+
+The options are optional, for details on the async option see [MultiValidator](#multivalidator).
+
+### Registering validators
+
+While you still have the `add` option, these are a few new options that you have to add validators and link them with
+specific fields on a struct:
+
+#### `validate(field..., validator)`
+
+Registers a validator for a given field, and it will automatically wrap the given validator with a [FieldValidator](#fieldvalidator)
+associated with the same given field. It register the validator on two lists, the basic validators list (that will run
+when you call `test`) and also into the field validators list (check `testField` method for more info).
+
+This is probably the method that you will use the most, because it address the most common situation (adding a validator
+to validates the data on a field).
+
+```javascript
+validator.validate('name', new PresenceValidator);
+validator.test({name: "someone"});
+validator.testField('name'); // will also run the test
+```
+
+#### `addAssociated(field..., validator)`
+
+It works almost as same as `validate`, expect that it **will not** wrap the validator with a `FieldValidator`.
+
+```javascript
+// this will end up as same as the previous validate example
+validator.addAssociated('name', new FieldValidator('name', new PresenceValidator));
+validator.test({name: "someone"});
+validator.testField('name', {name: "someone"}); // will also run the test
+```
+
+#### `addFieldValidator(field..., validator)`
+
+It is like `addAssociated` except that it **will not** add the validator into the regular validators list, that means
+the validator will only be called when you ask to validate that specific field, but no the general validation.
+
+```javascript
+validator.addFieldValidator('name', new FieldValidator('name', new PresenceValidator));
+validator.test({name: "someone"}); // this will not trigger any validators
+validator.testField('name', {name: "someone"}); // this will run the registered validator for the field
+```
+
+### Running validators for a single field
+
+`StructValidator` makes also possible to only the validators associated with a given field, that can save a lot of work,
+specially if have some field that uses a resourceful async option, that way on live forms when user updates an input you
+can run only the validators for that given field.
+
+Remember that the behavior is same as the `test` method on the regard of sync/async operations, if you use the flag
+`async: true` it will return a promise, otherwise will throw an error in case of failure.
+
+How to use it:
+
+```javascript
+var validator = new StructValidator({async: true});
+
+validator.validate('name', 'username', new PresenceValidator());
+validator.validate('username', uniqUserNameValidator); // lets say this validator does an ajax call to verify if the user name is available
+
+// when calling the testField you must pass the entire object to value (not just the value of the field), the reason
+// for that is because there are some validators that runs a given a field but also needs information from other fields,
+// a "password confirmation" validator would be the most common example of that case
+validator.testField('name', {name: "", username: ""}).done(function() {
+  // the field is fine, do your UI stuff
+}, function(err) {
+  // err here is a MultiValidationError, as same as the error on the MultiValidator
+
+  var errors = err.errors; // list of errors from the test on that field
+  // do your UI updates
+});
+```
+
+### Example
+
+```javascript
+var passwordMatchValidator = {
+  test: (value) {
+    if (value.password != value.password_confirmation) {
+      throw new ValidationError("Password confirmation doesn't match the password", value, this);
+    }
+  }
+};
+
+var userValidator = new StructValidator();
+
+userValidator.validate('name', 'password', new PresenceValidator());
+userValidator.validate('email', new FormatValidator(/\w+@\w+\.\w+/));
+userValidator.addAssociated('password_confirmation', passwordMatchValidator);
+
+try {
+  userValidator.validate({
+    name: "",
+    email: "invalid",
+    password: "123"
+  });
+} catch (err) {
+  err.errors; // a list will all errors
+  err.fieldErrors.name // errors on the field name, if there were no errors, will be an empty list
+}
+```
 
 Delegational Validators
 -----------------------
