@@ -13,6 +13,9 @@ Index
 - [Basic Validations](#basic-validations)
 - [Async Validations](#async-validations)
 - [Composing Validations](#composing-validations)
+- [Creating custom validators](#creating-custom-validators)
+  - [Creating synchronous validators](#creating-synchronous-validators)
+  - [Creating asynchronous validators](#creating-asynchronous-validators)
 - [Built-in validators](#built-in-validators)
   - [Leaf Validators](#leaf-validators)
     - [PresenceValidator](#presencevalidator)
@@ -27,13 +30,8 @@ Index
     - [NegateValidator](#negatevalidator)
     - [AllValidator](#allvalidator)
     - [RephraseValidator](#rephrasevalidator)
-- [Creating custom validators](#creating-custom-validators)
-  - [Creating synchronous validators](#creating-synchronous-validators)
-  - [Creating asynchronous validators](#creating-asynchronous-validators)
-  - [Creating delegational validators](#creating-delegational-validators)
-  - [Creating multi validators](#creating-multi-validators)
 - [Helper Library](#helper-library)
-- Case Study: validating user signup on server and client side with same configuration
+- Case Study: validating user sign up on server and client side with same configuration
 
 Introduction
 ------------
@@ -238,6 +236,201 @@ async validations into multi validators, making fields optional, replacing error
 that you can know about this library, check each validator specific documentation for details on each feature for more
 details.
 
+Creating custom validators
+--------------------------
+
+Creating synchronous validators
+-------------------------------
+
+Being able to add custom validators is something that I really care about, the framework
+was designed and built upon a simple interface in order to make as easy as possible to
+create new validators and use it togheter with others.
+
+Remember the interface that we talked about on the introduction?
+
+```javascript
+validator.test(value)
+```
+
+I mean it, so, let's implement a simple validator that validates if a value is equal
+to a specific value. And let's do it into the simplest possible way:
+
+```javascript
+var cv = require('custom-validations');
+
+var equalToHelloValidator = {
+  test: function(value) {
+    if (value != 'hello') {
+      throw new cv.ValidationError('is not equal to hello', value, this);
+    }
+  }
+};
+
+// using the validator
+equalToValidator.test('not'); // faill
+equalToValidator.test('hello'); // ok
+```
+
+As you see, the only thing that we need from `custom-validations` is the
+`ValidationError`, the reason why you must use it to fire errors instead of a regular
+error, is because that way we can differentiate validation errors from other kinds of
+errors (that would be handle in different ways). The signature for instantiating a new
+`ValidationError` is:
+
+```javascript
+new ValidationError(message, value, validator);
+```
+
+This information helps other validators and errors handlers to deal better with error
+information.
+
+After you have it, just another quick example on how to use it with the regular
+validators:
+
+```javascript
+var cv = require('custom-validations');
+
+var equalToHelloValidator = {
+  test: function(value) {
+    if (value != 'hello') {
+      throw new cv.ValidationError('is not equal to hello', value, this);
+    }
+  }
+};
+
+var modelValidator = new cv.StructValidator()
+  .validate('someField', equalToHelloValidator);
+
+modelValidator.test({someField: 'hello'}); // ok
+```
+
+You usually want a bit of more flexibility, but that's easy to accomplish, instead of
+making our validator as a crude object, we can use a factory to generate it in a more
+customizable way, as so:
+
+```javascript
+var cv = require('composed-validations');
+
+var equalToValidator = function (given) {
+  return {
+    test: function(value) {
+      if (value != given) {
+        throw new cv.ValidationError("is not equal to " + JSON.stringify(given), value, this);
+      }
+    }
+  };
+};
+
+var modelValidator = new cv.StructValidator()
+  .validate('someField', equalToValidator('hello'));
+
+modelValidator.test({someField: 'hello'}); // ok
+```
+
+I love the power of closures, don't you?
+
+You can use class style if you prefer:
+
+```javascript
+var cv = require('composed-validations');
+
+var EqualToValidator = function (given) {
+  this.given = given;
+};
+
+EqualToValidator.prototype.test = function(value) {
+  if (value != given) {
+    throw new cv.ValidationError("is not equal to " + JSON.stringify(given), value, this);
+  }
+};
+
+var modelValidator = new cv.StructValidator()
+  .validate('someField', new EqualToValidator('hello'));
+
+modelValidator.test({someField: 'hello'}); // ok
+```
+
+As you can see, it doesn't matter how you decide to build/construct/initialize your
+validators, the only thing that matters is that in the end you have an object that
+responds to:
+
+```javascript
+validator.test(value);
+```
+
+And them it will happily blend into the system.
+
+Creating asynchronous validators
+--------------------------------
+
+Asynchronous validators implementation is pretty much the same as regular validations,
+there are only 2 differences that you need to be aware of:
+
+1. Asynchronous validators must respond to the method `async` returning `true`
+2. Asynchronous validators must always returns a `Promise/A` compliant `Promise`
+
+You can use any `Promises/A` compliant library to get your promises (when, Q, Promise...)
+but since we needed to have one internally, and some users may not want to add another
+dependency, we expose our internal instance of the [Promise](https://www.npmjs.org/package/promise) library for you, so you
+can just use it if you want.
+
+Let's go for an example:
+
+```javascript
+var cv = require('composed-validations'),
+    Promise = cv.Promise;
+
+var delayedValidator = {
+  // this is very important, because some validators have different ways of running
+  // when composed with async, don't forget it!
+  async: function() { return true; };
+
+  test: function(value) {
+    // get a hold of this, we gonna need it
+    var _this = this;
+
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        if (value == 'hello') {
+          // if it's ok, you can resolve with anything, it doesn't really matter
+          resolve(null);
+        } else {
+          // when error happens, raise it! promises style
+          reject(new cv.ValidationError("is not equal to hello", value, _this);
+        }
+      }, 500);
+    });
+  }
+};
+
+delayedValidator.test('fail').then(function() {
+  // all good, but with the argument that will passed, here will not be reached
+}, function(err) {
+  // your error handling
+});
+```
+
+One of the reasons that you have to explicitly say that your validator is async, is to
+protect you on situations like this:
+
+```javascript
+new StructValidator() // note this is a "sync" kind of multi validator
+  .validate('name', new PresenceValidator) // ok, presence if sync
+  .validate('hello', delayedValidator); // this will raise an error!
+```
+
+Think about it, it's totally possible to convert `sync` validators into an `async` form,
+but it's impossible on the other direction. So, if you add an `async` validator into a
+`sync` multi validator (remember that `StructValidator` is just a specialized type of
+`MultiValidator`) you probably did by mistake, so the library will raise an error and
+ask you to make your multi validator `async`:
+
+```javascript
+new StructValidator({async: true})
+  .validate('name', new PresenceValidator)
+  .validate('hello', delayedValidator); // now it's all fine
+```
+
 Built-in Validators
 -------------------
 
@@ -386,7 +579,7 @@ When you do a sync validation it will throw the errors right way, on the async s
 `Promise` errors. This flag is to prevent you to use the wrong interface by mistake, so, if you need async on your
 `MultiValidator`, send it as `true`.
 
-### Registerind validators
+### Registering validators
 
 #### `add(validator)`
 
@@ -564,15 +757,6 @@ AllValidator
 
 RephraseValidator
 -----------------
-
-Creating custom validators
---------------------------
-
-Creating synchronous validators
--------------------------------
-
-Creating asynchronous validators
---------------------------------
 
 Warning
 -------
