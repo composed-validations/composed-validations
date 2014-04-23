@@ -23,7 +23,7 @@ module.exports = class MultiValidator
 
   test: (value) =>
     @multiTest value, (errors) =>
-      throw new MultiValidationError("You have error(s) on your data:", value, this, errors) if errors.length > 0
+      throw new MultiValidationError(null, value, this, errors) if errors.length > 0
 
       value
 

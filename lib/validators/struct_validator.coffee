@@ -26,7 +26,7 @@ module.exports = class StructValidator extends MultiValidator
 
   test: (value) =>
     @multiTest value, (errors) =>
-      throw new StructValidationError("You have error(s) on your struct:", value, this, errors) if errors.length > 0
+      throw new StructValidationError(null, value, this, errors) if errors.length > 0
 
       value
 

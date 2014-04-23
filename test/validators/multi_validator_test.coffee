@@ -135,11 +135,22 @@ describe "MultiValidator", ->
 
       h.testFail(validator, 'value')
 
-    it "correctly generates the error for multi failure", (validator, failValidator) ->
+    it "correctly generates the error for one failure", (validator, failValidator) ->
       validator.add(failValidator)
 
       try
         validator.test(null)
       catch err
-        expect(err.message).eq "You have error(s) on your data:\nfailed"
+        expect(err.message).eq "failed"
         expect(err.errors).eql [failValidator.err]
+
+
+    it "correctly generates the error for multi failure", (validator, failValidator) ->
+      validator.add(failValidator)
+      validator.add(failValidator)
+
+      try
+        validator.test(null)
+      catch err
+        expect(err.message).eq "failed\nfailed"
+        expect(err.errors).eql [failValidator.err, failValidator.err]
