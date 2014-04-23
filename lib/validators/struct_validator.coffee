@@ -28,6 +28,8 @@ module.exports = class StructValidator extends MultiValidator
     @multiTest value, (errors) =>
       throw new StructValidationError("You have error(s) on your struct:", value, this, errors) if errors.length > 0
 
+      value
+
   addAssociated: (fields..., validator) =>
     @add(validator)
 

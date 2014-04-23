@@ -27,6 +27,8 @@ describe "All Validator", ->
           unless (number % 2) == 0
             throw new h.ValidationError("#{number} is not even", number, this)
 
+          number
+
       validator = new AllValidator(evenValidator)
 
       h.testValidator validator, (pass, fail) ->

@@ -10,3 +10,5 @@ module.exports = class RephraseValidator extends DelegationalValidator
         err.message = @message
 
         throw err
+
+      value

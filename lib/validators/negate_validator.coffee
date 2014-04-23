@@ -9,3 +9,5 @@ module.exports = class NegateValidator extends DelegationalValidator
         # TODO: figure out a better way to handle child errors here
         childError = new ValidationError("", value, this)
         @throwError("validation negated failed", value, childError, this)
+
+      value

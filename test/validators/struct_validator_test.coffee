@@ -80,6 +80,9 @@ describe "Struct Validator", ->
       expect(validator.fieldValidators['password_confirmation'].validators).eql [passValidator]
 
   describe "#test", ->
+    it "when passes, it returns the input", (validator) ->
+      h.testPass(validator, 'hello')
+
     describe "struct errors", ->
       it "contains the errors grouped by field and general errors", (validator, passValidator) ->
         fail1 = test: (value) -> throw new ValidationError("fail1", value, fail1)

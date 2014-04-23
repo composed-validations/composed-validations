@@ -25,6 +25,8 @@ module.exports = class MultiValidator
     @multiTest value, (errors) =>
       throw new MultiValidationError("You have error(s) on your data:", value, this, errors) if errors.length > 0
 
+      value
+
   multiTest: (value, handler) =>
     if @async()
       @testAsync(value).then(handler)

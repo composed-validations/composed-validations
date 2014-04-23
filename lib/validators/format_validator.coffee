@@ -6,3 +6,5 @@ module.exports = class FormatValidator
   test: (value) =>
     unless @format.exec(value)
       throw new ValidationError("format is not valid", value, this)
+
+    value

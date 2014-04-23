@@ -15,10 +15,12 @@ module.exports = class FieldValidator extends DelegationalValidator
       throw new ValidationError("Can't access field #{_.json @field} on #{_.json object}", object, this)
 
     unless _.has(object, @field)
-      return if @options.optional
+      return object if @options.optional
       throw new ValidationError("Field #{@field} is not present on the object #{_.json object}", object, this)
 
     value = object[@field]
 
     @runValidator value, (err) =>
       @throwError("#{_.humanizeFieldName @field} #{err.message}", object, err, this) if err
+
+      object

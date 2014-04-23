@@ -42,12 +42,12 @@ module.exports =
   testPass: (validator, value) ->
     message = "#{extractClassName validator} should pass value #{JSON.stringify(value)}"
 
-    expect((-> validator.test(value)), message).not.throw()
+    expect(validator.test(value), message).eq(value)
 
   testPassAsync: (validator, value) ->
     message = "#{extractClassName validator} should resolve value #{JSON.stringify(value)}"
 
-    expect(validator.test(value), message).hold.not.reject()
+    expect(validator.test(value), message).eq(value)
 
   testFail: (validator, value, message) ->
     errorMessage = "#{extractClassName validator} should fail value #{JSON.stringify(value)}"

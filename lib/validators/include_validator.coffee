@@ -7,3 +7,5 @@ module.exports = class IncludeValidator
   test: (value) =>
     unless _.contains(@possibilities, value)
       throw new ValidationError("#{_.json value} is not included on the list #{_.json @possibilities}", value, this)
+
+    value

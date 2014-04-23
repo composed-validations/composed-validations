@@ -15,8 +15,10 @@ module.exports = class AllValidator extends DelegationalValidator
       @testSync(list)
 
   testAsync: (list) =>
-    Promise.all(@testSync(list)).then(
-      undefined,
+    promises = _.map(list, _.lift(@validator.test))
+
+    Promise.all(promises).then(
+      => list
       (err) => @throwError(err.message, list, err)
     )
 
@@ -24,6 +26,8 @@ module.exports = class AllValidator extends DelegationalValidator
     try
       for item in list
         @validator.test(item)
+
+      list
     catch err
       @throwError(err.message, list, err)
 

@@ -8,6 +8,8 @@ module.exports = class PresenceValidator
     unless @normalize(value)
       throw new ValidationError("can't be blank", value, this)
 
+    value
+
   normalize: (value) =>
     if _.isString(value)
       trim(value)

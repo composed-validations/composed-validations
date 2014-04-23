@@ -11,3 +11,5 @@ module.exports = class RangeValidator
 
     if value > @max
       throw new ValidationError("needs to be lower than #{_.json @max}", value, this)
+
+    value
