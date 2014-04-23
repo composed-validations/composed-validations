@@ -30,6 +30,9 @@ Index
 - [Creating custom validators](#creating-custom-validators)
   - [Creating synchronous validators](#creating-synchronous-validators)
   - [Creating asynchronous validators](#creating-asynchronous-validators)
+  - [Creating delegational validators](#creating-delegational-validators)
+  - [Creating multi validators](#creating-multi-validators)
+- [Helper Library](#helper-library)
 - Case Study: validating user signup on server and client side with same configuration
 
 Introduction
@@ -500,11 +503,13 @@ How to use it:
 var validator = new StructValidator({async: true});
 
 validator.validate('name', 'username', new PresenceValidator());
-validator.validate('username', uniqUserNameValidator); // lets say this validator does an ajax call to verify if the user name is available
+// lets say this validator does an ajax call to verify if the user name is available
+validator.validate('username', uniqUserNameValidator);
 
-// when calling the testField you must pass the entire object to value (not just the value of the field), the reason
-// for that is because there are some validators that runs a given a field but also needs information from other fields,
-// a "password confirmation" validator would be the most common example of that case
+// when calling the testField you must pass the entire object to value (not just the
+// value of the field), the reason for that is because there are some validators that
+// runs a given a field but also needs information from other fields, a
+// "password confirmation" validator would be the most common example of that case
 validator.testField('name', {name: "", username: ""}).done(function() {
   // the field is fine, do your UI stuff
 }, function(err) {
@@ -547,9 +552,6 @@ try {
 Delegational Validators
 -----------------------
 
-DelegationalValidator
-----------------------
-
 FieldValidator
 ---------------
 
@@ -562,6 +564,14 @@ AllValidator
 RephraseValidator
 -----------------
 
+Creating custom validators
+--------------------------
+
+Creating synchronous validators
+-------------------------------
+
+Creating asynchronous validators
+--------------------------------
 
 Warning
 -------
