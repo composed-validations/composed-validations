@@ -264,6 +264,10 @@ var equalToHelloValidator = {
     if (value != 'hello') {
       throw new cv.ValidationError('is not equal to hello', value, this);
     }
+
+    // you must return the same input as given to you, unless you are writing a
+    // specifically to transform the data
+    return value;
   }
 };
 
@@ -770,6 +774,30 @@ work on the returned value.
 For that matter, **ALL** of the built-in validators will always return the same input
 that is given to them, when writing validators you must do that too, unless you really
 writing a validator about transforming data.
+
+### Constructor
+
+```javascript
+new SequenceValidator({
+  async: false
+});
+```
+
+The options are optional, for details on the async option see [MultiValidator](#multivalidator).
+
+### Example
+
+```javascript
+// let's supposed this is some library that does a request and checks something
+var checkRemoteNumber = require('check-remote-number')
+
+var idValidator = new SequenceValidator({async: true})
+  .add(new FormatValidator(\d+))
+  .add(checkRemoteNumber);
+
+idValidator.test("ha"); // will fail on the format validator, will not call teh service
+idValidator.test("123"); // format ok, checking on the server
+```
 
 Delegational Validators
 -----------------------
