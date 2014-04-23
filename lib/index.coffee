@@ -12,6 +12,7 @@ module.exports =
   NegateValidator:       require('./validators/negate_validator.coffee')
   PresenceValidator:     require('./validators/presence_validator.coffee')
   RangeValidator:        require('./validators/range_validator.coffee')
+  SequenceValidator:     require('./validators/sequence_validator.coffee')
   StructValidator:       require('./validators/struct_validator.coffee')
 
   DelegatedValidationError: require('./errors/delegated_validation_error.coffee')
