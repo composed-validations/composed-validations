@@ -82,12 +82,16 @@ describe "Util", ->
       expect(_.contains([1], 1)).true
       expect(_.contains([0, 1, 2], 0)).true
       expect(_.contains([0, 1, 2], 1)).true
-      expect(_.contains([0, 1, 2], 2)).true
+      expect(_.contains([0, 1, 2], 2)).trueQ
       expect(_.contains([0, 1, 2], 3)).false
 
   describe "#map", ->
     it "maps a list into another", ->
       expect(_.map([1, 2, 3], (x) -> x * 2)).eql [2, 4, 6]
+
+  describe "#reduce", ->
+    it "reduces the list into a value", ->
+      expect(_.reduce([1, 2, 3], 0, (acc, x) -> x + acc)).eq 6
 
   describe "#has", ->
     it "detects if a key is present on the object", ->

@@ -43,6 +43,12 @@ module.exports =
 
     newList
 
+  reduce: (list, initial, iterator) ->
+    for item in list
+      initial = iterator(initial, item)
+
+    initial
+
   has: (object, lookupKey) ->
     for key, value of object
       return true if key == lookupKey
