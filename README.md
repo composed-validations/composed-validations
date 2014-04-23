@@ -25,6 +25,7 @@ Index
   - [Multi Validators](#multi-validators)
     - [MultiValidator](#multivalidator)
     - [StructValidator](#structvalidator)
+    - [SequenceValidator](#sequencevalidator)
   - [Delegational Validators](#delegational-validators)
     - [FieldValidator](#fieldvalidator)
     - [NegateValidator](#negatevalidator)
@@ -742,6 +743,33 @@ try {
   err.fieldErrors.name // errors on the field name, if there were no errors, will be an empty list
 }
 ```
+
+SequenceValidator
+-----------------
+
+This validator is another kind of `MultiValidator` but it runs a bit different way.
+
+While `MultiValidator` is concerned about running all the available validators as quick
+as possible, and them grouping the errors results, the `SequenceValidator` instead runs
+the validators one by one, and if any validation error occurs, it will stop the
+iteration and throw that error right way.
+
+This behavior is good when you have a slow validation that can be prevented to run when
+a quicker one can detect the fail first, for example, if you have a validator that
+hits the server and verify if a given email is already registered on the database, this
+validation is considered slow because it needs to go into a server, which can take a
+while, but in the email case, you can prevent it from running if you verify that the
+email is on an invalid format, that way the format validator can prevent the uniq
+validator to run until the email format is at least valid.
+
+Another difference on `SequenceValidator` is that on it, it's possible to transform the
+given value for the next validator. That enables possibilities like a `HttpValidator`
+that will fetch data into a server, and them send it to the next validator that will
+work on the returned value.
+
+For that matter, **ALL** of the built-in validators will always return the same input
+that is given to them, when writing validators you must do that too, unless you really
+writing a validator about transforming data.
 
 Delegational Validators
 -----------------------
