@@ -1,6 +1,6 @@
 {
   "name": "composed-validations",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Simple and highly extensible validation library",
   "main": "index.js",
   "browserify": {

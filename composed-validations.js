@@ -2,7 +2,7 @@
 window.ComposedValidations = require('./index.coffee');
 
 
-},{"./index.coffee":5}],2:[function(require,module,exports){
+},{"./index.coffee":6}],2:[function(require,module,exports){
 var DelegatedValidationError, ValidationError,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -22,7 +22,7 @@ module.exports = DelegatedValidationError = (function(_super) {
 })(ValidationError);
 
 
-},{"../errors/validation_error.coffee":4}],3:[function(require,module,exports){
+},{"../errors/validation_error.coffee":5}],3:[function(require,module,exports){
 var MultiValidationError, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -54,7 +54,53 @@ module.exports = MultiValidationError = (function(_super) {
 })(ValidationError);
 
 
-},{"../util.coffee":6,"./validation_error.coffee":4}],4:[function(require,module,exports){
+},{"../util.coffee":7,"./validation_error.coffee":5}],4:[function(require,module,exports){
+var MultiValidationError, StructValidationError,
+  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+MultiValidationError = require('./multi_validation_error.coffee');
+
+module.exports = StructValidationError = (function(_super) {
+  __extends(StructValidationError, _super);
+
+  function StructValidationError() {
+    this.indexFieldErros = __bind(this.indexFieldErros, this);
+    StructValidationError.__super__.constructor.apply(this, arguments);
+    this.indexFieldErros();
+  }
+
+  StructValidationError.prototype.indexFieldErros = function() {
+    var assigned, err, field, multiVal, _base, _i, _len, _ref, _ref1;
+    this.generalErrors = [];
+    this.fieldErrors = {};
+    _ref = this.errors;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      err = _ref[_i];
+      assigned = false;
+      _ref1 = this.validator.fieldValidators;
+      for (field in _ref1) {
+        multiVal = _ref1[field];
+        (_base = this.fieldErrors)[field] || (_base[field] = []);
+        if (multiVal.validators.indexOf(err.validator) > -1) {
+          this.fieldErrors[field].push(err);
+          assigned = true;
+        }
+      }
+      if (!assigned) {
+        this.generalErrors.push(err);
+      }
+    }
+    return this;
+  };
+
+  return StructValidationError;
+
+})(MultiValidationError);
+
+
+},{"./multi_validation_error.coffee":3}],5:[function(require,module,exports){
 var ValidationError,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -76,7 +122,7 @@ module.exports = ValidationError = (function(_super) {
 })(Error);
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = {
   Promise: require('promise'),
   _: require('./util.coffee'),
@@ -96,7 +142,7 @@ module.exports = {
 };
 
 
-},{"./errors/delegated_validation_error.coffee":2,"./errors/multi_validation_error.coffee":3,"./errors/validation_error.coffee":4,"./util.coffee":6,"./validators/all_validator.coffee":7,"./validators/delegational_validator.coffee":8,"./validators/field_validator.coffee":9,"./validators/format_validator.coffee":10,"./validators/include_validator.coffee":11,"./validators/multi_validator.coffee":12,"./validators/negate_validator.coffee":13,"./validators/presence_validator.coffee":14,"./validators/range_validator.coffee":15,"./validators/struct_validator.coffee":17,"promise":19}],6:[function(require,module,exports){
+},{"./errors/delegated_validation_error.coffee":2,"./errors/multi_validation_error.coffee":3,"./errors/validation_error.coffee":5,"./util.coffee":7,"./validators/all_validator.coffee":8,"./validators/delegational_validator.coffee":9,"./validators/field_validator.coffee":10,"./validators/format_validator.coffee":11,"./validators/include_validator.coffee":12,"./validators/multi_validator.coffee":13,"./validators/negate_validator.coffee":14,"./validators/presence_validator.coffee":15,"./validators/range_validator.coffee":16,"./validators/struct_validator.coffee":18,"promise":20}],7:[function(require,module,exports){
 var Promise, ValidationError,
   __slice = [].slice;
 
@@ -189,7 +235,7 @@ module.exports = {
 };
 
 
-},{"./errors/validation_error.coffee":4,"promise":19}],7:[function(require,module,exports){
+},{"./errors/validation_error.coffee":5,"promise":20}],8:[function(require,module,exports){
 var AllValidator, DelegationalValidator, MultiValidator, Promise, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -259,7 +305,7 @@ module.exports = AllValidator = (function(_super) {
 })(DelegationalValidator);
 
 
-},{"../errors/validation_error.coffee":4,"../util.coffee":6,"./delegational_validator.coffee":8,"./multi_validator.coffee":12,"promise":19}],8:[function(require,module,exports){
+},{"../errors/validation_error.coffee":5,"../util.coffee":7,"./delegational_validator.coffee":9,"./multi_validator.coffee":13,"promise":20}],9:[function(require,module,exports){
 var DelegatedValidationError, DelegationalValidator, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -324,7 +370,7 @@ module.exports = DelegationalValidator = (function() {
 })();
 
 
-},{"../errors/delegated_validation_error.coffee":2,"../util.coffee":6}],9:[function(require,module,exports){
+},{"../errors/delegated_validation_error.coffee":2,"../util.coffee":7}],10:[function(require,module,exports){
 var DelegationalValidator, FieldValidator, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -377,7 +423,7 @@ module.exports = FieldValidator = (function(_super) {
 })(DelegationalValidator);
 
 
-},{"../errors/validation_error.coffee":4,"../util.coffee":6,"./delegational_validator.coffee":8}],10:[function(require,module,exports){
+},{"../errors/validation_error.coffee":5,"../util.coffee":7,"./delegational_validator.coffee":9}],11:[function(require,module,exports){
 var FormatValidator, ValidationError,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -400,7 +446,7 @@ module.exports = FormatValidator = (function() {
 })();
 
 
-},{"../errors/validation_error.coffee":4}],11:[function(require,module,exports){
+},{"../errors/validation_error.coffee":5}],12:[function(require,module,exports){
 var IncludeValidator, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -425,7 +471,7 @@ module.exports = IncludeValidator = (function() {
 })();
 
 
-},{"../errors/validation_error.coffee":4,"../util.coffee":6}],12:[function(require,module,exports){
+},{"../errors/validation_error.coffee":5,"../util.coffee":7}],13:[function(require,module,exports){
 var MultiValidationError, MultiValidator, Promise, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -504,7 +550,9 @@ module.exports = MultiValidator = (function() {
     errors = [];
     results = _.map(this.validators, (function(_this) {
       return function(v) {
-        return _.lift(v.test)(value).then(void 0, function(err) {
+        return _.lift(function(value) {
+          return v.test(value);
+        })(value).then(void 0, function(err) {
           _.guardValidationError(err);
           errors.push(err);
           return null;
@@ -527,7 +575,7 @@ module.exports = MultiValidator = (function() {
 })();
 
 
-},{"../errors/multi_validation_error.coffee":3,"../util.coffee":6,"promise":19}],13:[function(require,module,exports){
+},{"../errors/multi_validation_error.coffee":3,"../util.coffee":7,"promise":20}],14:[function(require,module,exports){
 var DelegationalValidator, NegateValidator, ValidationError,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -562,7 +610,7 @@ module.exports = NegateValidator = (function(_super) {
 })(DelegationalValidator);
 
 
-},{"../errors/validation_error.coffee":4,"./delegational_validator.coffee":8}],14:[function(require,module,exports){
+},{"../errors/validation_error.coffee":5,"./delegational_validator.coffee":9}],15:[function(require,module,exports){
 var PresenceValidator, ValidationError, trim, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -599,7 +647,7 @@ module.exports = PresenceValidator = (function() {
 })();
 
 
-},{"../errors/validation_error.coffee":4,"../util.coffee":6}],15:[function(require,module,exports){
+},{"../errors/validation_error.coffee":5,"../util.coffee":7}],16:[function(require,module,exports){
 var RangeValidator, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
@@ -612,6 +660,9 @@ module.exports = RangeValidator = (function() {
     this.min = min;
     this.max = max;
     this.test = __bind(this.test, this);
+    if (this.min > this.max) {
+      throw new Error("Range Validator: input min (" + this.min + ") is bigger than the max (" + this.max + ")");
+    }
   }
 
   RangeValidator.prototype.test = function(value) {
@@ -628,7 +679,7 @@ module.exports = RangeValidator = (function() {
 })();
 
 
-},{"../errors/validation_error.coffee":4,"../util.coffee":6}],16:[function(require,module,exports){
+},{"../errors/validation_error.coffee":5,"../util.coffee":7}],17:[function(require,module,exports){
 var DelegationalValidator, RephraseValidator,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -661,8 +712,8 @@ module.exports = RephraseValidator = (function(_super) {
 })(DelegationalValidator);
 
 
-},{"./delegational_validator.coffee":8}],17:[function(require,module,exports){
-var FieldValidator, MultiValidator, RephraseValidator, StructValidator, _,
+},{"./delegational_validator.coffee":9}],18:[function(require,module,exports){
+var FieldValidator, MultiValidator, RephraseValidator, StructValidationError, StructValidator, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -676,6 +727,8 @@ FieldValidator = require('./field_validator.coffee');
 
 RephraseValidator = require('./rephrase_validator.coffee');
 
+StructValidationError = require('../errors/struct_validation_error.coffee');
+
 module.exports = StructValidator = (function(_super) {
   __extends(StructValidator, _super);
 
@@ -686,6 +739,7 @@ module.exports = StructValidator = (function(_super) {
     this.testField = __bind(this.testField, this);
     this.addFieldValidator = __bind(this.addFieldValidator, this);
     this.addAssociated = __bind(this.addAssociated, this);
+    this.test = __bind(this.test, this);
     this.validate = __bind(this.validate, this);
     StructValidator.__super__.constructor.apply(this, arguments);
     this.fieldValidators = {};
@@ -707,6 +761,16 @@ module.exports = StructValidator = (function(_super) {
       this.addAssociated(field, wrapped);
     }
     return this;
+  };
+
+  StructValidator.prototype.test = function(value) {
+    return this.multiTest(value, (function(_this) {
+      return function(errors) {
+        if (errors.length > 0) {
+          throw new StructValidationError("You have error(s) on your struct:", value, _this, errors);
+        }
+      };
+    })(this));
   };
 
   StructValidator.prototype.addAssociated = function() {
@@ -757,7 +821,7 @@ module.exports = StructValidator = (function(_super) {
 })(MultiValidator);
 
 
-},{"../util.coffee":6,"./field_validator.coffee":9,"./multi_validator.coffee":12,"./rephrase_validator.coffee":16}],18:[function(require,module,exports){
+},{"../errors/struct_validation_error.coffee":4,"../util.coffee":7,"./field_validator.coffee":10,"./multi_validator.coffee":13,"./rephrase_validator.coffee":17}],19:[function(require,module,exports){
 'use strict';
 
 var asap = require('asap')
@@ -864,7 +928,7 @@ function doResolve(fn, onFulfilled, onRejected) {
   }
 }
 
-},{"asap":20}],19:[function(require,module,exports){
+},{"asap":21}],20:[function(require,module,exports){
 'use strict';
 
 //This file contains then/promise specific extensions to the core promise API
@@ -1038,7 +1102,7 @@ Promise.race = function (values) {
   });
 }
 
-},{"./core.js":18,"asap":20}],20:[function(require,module,exports){
+},{"./core.js":19,"asap":21}],21:[function(require,module,exports){
 (function (process){
 
 // Use the fastest possible means to execute a task in a future turn
@@ -1155,7 +1219,7 @@ module.exports = asap;
 
 
 }).call(this,require("/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":21}],21:[function(require,module,exports){
+},{"/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":22}],22:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
