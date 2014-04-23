@@ -339,8 +339,8 @@ var EqualToValidator = function (given) {
 };
 
 EqualToValidator.prototype.test = function(value) {
-  if (value != given) {
-    throw new cv.ValidationError("is not equal to " + JSON.stringify(given), value, this);
+  if (value != this.given) {
+    throw new cv.ValidationError("is not equal to " + JSON.stringify(this.given), value, this);
   }
 };
 
