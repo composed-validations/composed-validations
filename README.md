@@ -60,6 +60,7 @@ npm install -S composed-validations
 ```
 
 Or you can [download the browser version](https://raw.githubusercontent.com/wilkerlucio/composed-validations/master/composed-validations.js)
+(it's about 5kb when minified+gzip).
 
 Basic validations
 -----------------
