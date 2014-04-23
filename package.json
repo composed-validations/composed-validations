@@ -8,6 +8,7 @@
       "coffeeify"
     ]
   },
+  "browser": "./lib/index.coffee",
   "scripts": {
     "test": "./node_modules/.bin/barrier $(find test -name '*_test.coffee')"
   },
