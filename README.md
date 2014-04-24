@@ -893,6 +893,26 @@ validator.test(['a', {}, 3]); // all ok here
 RephraseValidator
 -----------------
 
+Changes the error from a given validator when it fails.
+
+### Constructor
+
+```javascript
+new RephraseValidator(newMessage, validator)
+```
+
+### Example
+
+```javascript
+var validator = new RephraseValidator('feed me something true dude...', new PresenceValidator());
+
+try {
+  validator.test(null);
+} catch (err) {
+  err.message; // 'feed me something true dude...'
+}
+```
+
 Warning
 -------
 
