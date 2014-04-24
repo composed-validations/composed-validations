@@ -931,7 +931,7 @@ On the examples I'll consider that you have the `_` variable set as on the code 
 
 So here is goes the list of available functions, pick what servers you.
 
-### `json(value)`
+#### `json(value)`
 
 Stringify an object. This is just an alias for `JSON.stringify`
 
@@ -939,7 +939,7 @@ Stringify an object. This is just an alias for `JSON.stringify`
 _.json('a'); // "a"
 ```
 
-### `isString(value)`
+#### `isString(value)`
 
 Detects if a given `value` is a string.
 
@@ -952,7 +952,7 @@ _.isString(null); // false
 _.isString({}); // false
 ```
 
-### `isFunction(value)`
+#### `isFunction(value)`
 
 Detects if a given `value` is a function.
 
@@ -960,7 +960,7 @@ Detects if a given `value` is a function.
 _.isFunction(function() {}); // true
 ```
 
-### `isArray`
+#### `isArray`
 
 Detects if a given `value` is an array.
 
@@ -971,7 +971,7 @@ _.isArray(""); // false
 _.isArray({}); // false
 ```
 
-### `isValidator(value)`
+#### `isValidator(value)`
 
 Detects if a given `value` is a validator (that means, it has a property `test` that is
 a `Function`)
@@ -981,16 +981,16 @@ _.isValidator(new PresenceValidator()); // true
 _.isValidator({}); // false
 ```
 
-### `guardValidator(value)`
+#### `guardValidator(value)`
 
 This function will raise an error unless the given `value` is a validator.
 
-### `guardValidationError(value)`
+#### `guardValidationError(value)`
 
 Will throw an error unless the given `value` is an instance of `ValidationError` (extensions
 of the class are also accepted).
 
-### `contains(list, value)`
+#### `contains(list, value)`
 
 Check if `value` is present into the `list`.
 
@@ -999,7 +999,7 @@ _.contains([1, 2, 3], 1); // true
 _.contains([1, 2, 3], 5); // false
 ```
 
-### `map(list, iterator)`
+#### `map(list, iterator)`
 
 Given a `list`, returns a new `list` by iterating over the elements with the given
 `iterator`.
@@ -1010,7 +1010,7 @@ _.map([1, 2, 3], function (x) {
 }; // [2, 4, 6]
 ```
 
-### `reduce(list, initial, iterator)`
+#### `reduce(list, initial, iterator)`
 
 ```javascript
 _.reduce([1, 2, 3], 0, function (acc, x) {
@@ -1018,7 +1018,7 @@ _.reduce([1, 2, 3], 0, function (acc, x) {
 }); // 6
 ```
 
-### `lift(function)`
+#### `lift(function)`
 
 Given a function, make it returns a rejected `Promise` if any error is thrown, otherwise
 returns `Promise` that resolves with the function returned value.
@@ -1032,7 +1032,7 @@ lifted(2).then(function(z) {
 });
 ```
 
-### `humanizeFieldName(name)`
+#### `humanizeFieldName(name)`
 
 Given a string `name`, converts underlines into spaces and uppercase the first letter.
 
