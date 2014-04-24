@@ -805,6 +805,42 @@ Delegational Validators
 FieldValidator
 ---------------
 
+The field validator will run a given validator into a specific field of an object.
+
+### Constructor
+
+```javascript
+new FieldValidator(field, validator, {
+  optional: false
+});
+```
+
+Where:
+
+* **field**: the field name
+* **validator**: the validator to run the given field
+* **options**:
+  * **optional**: if true, the validator will accept when the field name is not present
+    on the object, (that means, when the object responds false to `hasOwnProperty(field)`)
+
+### Example
+
+```javascript
+var validator = new FieldValidator('name', new PresenceValidator(), {optional: true});
+
+// will fail because it can't access fields on null (same for false or undefined)
+validator.test(null);
+
+// will pass, since it's optional and the field is not present
+validator.test({});
+
+// will fail because the field is present, so the it will validate the presence, and fail
+validator.test({name: null});
+
+// ok
+validator.test({name: "chick"});
+```
+
 NegateValidator
 ----------------
 
