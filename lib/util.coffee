@@ -49,12 +49,6 @@ module.exports =
 
     initial
 
-  has: (object, lookupKey) ->
-    for key, value of object
-      return true if key == lookupKey
-
-    false
-
   lift: (fn) ->
     (args...) ->
       try

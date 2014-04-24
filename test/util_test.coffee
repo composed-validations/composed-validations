@@ -93,24 +93,6 @@ describe "Util", ->
     it "reduces the list into a value", ->
       expect(_.reduce([1, 2, 3], 0, (acc, x) -> x + acc)).eq 6
 
-  describe "#has", ->
-    it "detects if a key is present on the object", ->
-      obj =
-        a: undefined
-        b: null
-        d: false
-        c: true
-        e: "string"
-        f: 4
-
-      expect(_.has(obj, 'a')).true
-      expect(_.has(obj, 'b')).true
-      expect(_.has(obj, 'c')).true
-      expect(_.has(obj, 'd')).true
-      expect(_.has(obj, 'e')).true
-      expect(_.has(obj, 'f')).true
-      expect(_.has(obj, 'g')).false
-
   describe "#lift", ->
     describe "dealing with values", ->
       it "converts the return into a promise", ->

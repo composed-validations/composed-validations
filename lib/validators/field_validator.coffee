@@ -14,7 +14,7 @@ module.exports = class FieldValidator extends DelegationalValidator
     unless object
       throw new ValidationError("Can't access field #{_.json @field} on #{_.json object}", object, this)
 
-    unless _.has(object, @field)
+    unless object.hasOwnProperty(@field)
       return object if @options.optional
       throw new ValidationError("Field #{@field} is not present on the object #{_.json object}", object, this)
 
