@@ -844,6 +844,30 @@ validator.test({name: "chick"});
 NegateValidator
 ----------------
 
+The negate validator will invert the result of a given validator.
+
+### Constructor
+
+```javascript
+new NegateValidator(validator)
+```
+
+### Example
+
+```javascript
+var validator = new NegateValidator(new PresenceValidator());
+
+validator.test('hey'); // will fail, inverting the presence validator result
+validator.test(null); // ok
+```
+
+### Caveats
+
+By a current design constraint, the error messages that comes from `NegateValidator` are
+not user friendly... They look like this: `validation negated failed` (all the times).
+This is something I plan to improve over time, but for now I suggest you to use the
+[RephraseValidator](#rephrasevalidator) to define a better error message for your users.
+
 AllValidator
 -------------
 
