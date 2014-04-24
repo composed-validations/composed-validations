@@ -575,6 +575,8 @@ Multi Validators
 MultiValidator
 ---------------
 
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/multi_validator.coffee)
+
 This validator enables you to create a group of validations that will run in order to validate a single value.
 
 ### Constructor
@@ -642,7 +644,9 @@ validator.test(function() {
 ```
 
 StructValidator
-----------------
+---------------
+
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/struct_validator.coffee)
 
 This validator is an extension of the [MultiValidator](#multivalidator), it has all the features available there, plus
 a few more.
@@ -763,6 +767,8 @@ try {
 SequenceValidator
 -----------------
 
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/sequence_validator.coffee)
+
 This validator is another kind of `MultiValidator` but it runs a bit different way.
 
 While `MultiValidator` is concerned about running all the available validators as quick
@@ -817,6 +823,8 @@ Delegational Validators
 FieldValidator
 ---------------
 
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/field_validator.coffee)
+
 The field validator will run a given validator into a specific field of an object.
 
 ### Constructor
@@ -856,6 +864,8 @@ validator.test({name: "chick"});
 NegateValidator
 ----------------
 
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/negate_validator.coffee)
+
 The negate validator will invert the result of a given validator.
 
 ### Constructor
@@ -883,6 +893,8 @@ This is something I plan to improve over time, but for now I suggest you to use 
 AllValidator
 -------------
 
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/all_validator.coffee)
+
 Given the value is a list, runs the validator against of the items, if any item fails
 the validation, a `ValidationError` will be thrown.
 
@@ -904,6 +916,8 @@ validator.test(['a', {}, 3]); // all ok here
 
 RephraseValidator
 -----------------
+
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/rephrase_validator.coffee)
 
 Changes the error from a given validator when it fails.
 
