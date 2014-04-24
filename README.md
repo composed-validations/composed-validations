@@ -32,6 +32,18 @@ Index
     - [AllValidator](#allvalidator)
     - [RephraseValidator](#rephrasevalidator)
 - [Helper Library](#helper-library)
+  - [json(value)](#jsonvalue)
+  - [isString(value)](#isstringvalue)
+  - [isFunction(value)](#isfunctionvalue)
+  - [isArray(value)](#isarrayvalue)
+  - [isValidator(value)](#isvalidatorvalue)
+  - [guardValidator(value)](#guardvalidatorvalue)
+  - [guardValidationError(value)](#guardvalidationerrorvalue)
+  - [contains(list, value)](#containslist-value)
+  - [map(list, iterator)](#maplist-iterator)
+  - [reduce(list, initial, iterator)](#reducelist-initial-iterator)
+  - [lift(function)](#liftfunction)
+  - [humanizeFieldName(name)](#humanizefieldnamename)
 - [More Information](#more-information)
 
 Introduction
@@ -960,7 +972,7 @@ Detects if a given `value` is a function.
 _.isFunction(function() {}); // true
 ```
 
-#### `isArray`
+#### `isArray(value)`
 
 Detects if a given `value` is an array.
 
