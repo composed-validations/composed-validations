@@ -59,7 +59,7 @@ validator.test(value);
 
 All of the validators responds to this interface, and each validator is a single small piece that just validates a
 single value. In order to validate complex values, you use `compositional validators` that will compose your complex
-validation.
+validation. We will learn more about that though this documentation.
 
 Install
 -------
@@ -112,7 +112,7 @@ throwing the error right away, it will must return a `Promise`, that can resolve
 (when the validation fails).
 
 Right now we don't provide any async validators out of the box because I couldn't find any general ones that worth to
-be built-in. But it's pretty easy to implement your own, check the (creating async validators)[] section for more info
+be built-in. But it's pretty easy to implement your own, check the [Creating asynchronous validators](#creating-asynchronous-validators) section for more info
 on that.
 
 The point here is just to have you know about validators may return a `Promise` instead of raising the error right away.
