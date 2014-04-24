@@ -32,7 +32,7 @@ Index
     - [AllValidator](#allvalidator)
     - [RephraseValidator](#rephrasevalidator)
 - [Helper Library](#helper-library)
-- Case Study: validating user sign up on server and client side with same configuration
+- [More Information](#more-information)
 
 Introduction
 ------------
@@ -913,7 +913,135 @@ try {
 }
 ```
 
-Warning
--------
+Helper Library
+--------------
 
-This library and it's documentation are in active development and design, and can still change a lot. Stay tuned.
+This is me sharing the internals of `composed-validations` with you, I think since they
+were useful for me, and you are going to load them anyway, they might be helpful for
+you too.
+
+The utility functions listed here are available at the `_` variable into the main
+`composed-validations` require (like the good guys [underscore](http://underscorejs.org/) and [lodash](http://lodash.com/):
+
+```javascript
+var _ = require('composed-validations')._;
+```
+
+On the examples I'll consider that you have the `_` variable set as on the code above.
+
+So here is goes the list of available functions, pick what servers you.
+
+### `json(value)`
+
+Stringify an object. This is just an alias for `JSON.stringify`
+
+```javascript
+_.json('a'); // "a"
+```
+
+### `isString(value)`
+
+Detects if a given `value` is a string.
+
+```javascript
+_.isString('a'); // true
+_.isString("ab"); // true
+_.isString(""); // true
+_.isString([]); // false
+_.isString(null); // false
+_.isString({}); // false
+```
+
+### `isFunction(value)`
+
+Detects if a given `value` is a function.
+
+```javascript
+_.isFunction(function() {}); // true
+```
+
+### `isArray`
+
+Detects if a given `value` is an array.
+
+```javascript
+_.isArray([]); // true
+_.isArray([1, 3]); // true
+_.isArray(""); // false
+_.isArray({}); // false
+```
+
+### `isValidator(value)`
+
+Detects if a given `value` is a validator (that means, it has a property `test` that is
+a `Function`)
+
+```javascript
+_.isValidator(new PresenceValidator()); // true
+_.isValidator({}); // false
+```
+
+### `guardValidator(value)`
+
+This function will raise an error unless the given `value` is a validator.
+
+### `guardValidationError(value)`
+
+Will throw an error unless the given `value` is an instance of `ValidationError` (extensions
+of the class are also accepted).
+
+### `contains(list, value)`
+
+Check if `value` is present into the `list`.
+
+```javascript
+_.contains([1, 2, 3], 1); // true
+_.contains([1, 2, 3], 5); // false
+```
+
+### `map(list, iterator)`
+
+Given a `list`, returns a new `list` by iterating over the elements with the given
+`iterator`.
+
+```javascript
+_.map([1, 2, 3], function (x) {
+  return x * 2;
+}; // [2, 4, 6]
+```
+
+### `reduce(list, initial, iterator)`
+
+```javascript
+_.reduce([1, 2, 3], 0, function (acc, x) {
+  return acc + x;
+}); // 6
+```
+
+### `lift(function)`
+
+Given a function, make it returns a rejected `Promise` if any error is thrown, otherwise
+returns `Promise` that resolves with the function returned value.
+
+```javascript
+var fn = function(x) { return 3 + x; };
+var lifted = _.lift(fn);
+
+lifted(2).then(function(z) {
+  alert(z); // 5
+});
+```
+
+### `humanizeFieldName(name)`
+
+Given a string `name`, converts underlines into spaces and uppercase the first letter.
+
+```javascript
+_.humanizeFieldName('name'); // Name
+_.humanizeFieldName('password_confirmation'); // Password confirmation
+```
+
+More Information
+----------------
+
+If you wanna know more tricks and tips about `composed-validations` check our [Wiki Pages](https://github.com/wilkerlucio/composed-validations/wiki/_pages).
