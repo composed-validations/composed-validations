@@ -70,7 +70,7 @@ Currently we ship the library in two formats, you can use the `NPM` version:
 npm install -S composed-validations
 ```
 
-Or you can [download the browser version](https://raw.githubusercontent.com/wilkerlucio/composed-validations/master/composed-validations.js)
+Or you can [download the browser version](https://raw.githubusercontent.com/composed-validations/composed-validations/master/composed-validations.js)
 (it's about 5kb when minified+gzip).
 
 Basic validations
@@ -469,7 +469,7 @@ Leaf Validators
 PresenceValidator
 ------------------
 
-[Source](https://github.com/wilkerlucio/composed-validations/blob/master/lib/validators/presence_validator.coffee)
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/presence_validator.coffee)
 
 This validator with check if the given value is present.
 
@@ -499,7 +499,7 @@ validator.test({});
 FormatValidator
 ----------------
 
-[Source](https://github.com/wilkerlucio/composed-validations/blob/master/lib/validators/format_validator.coffee)
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/format_validator.coffee)
 
 This validator tests a value against a [Regular Expression](https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions).
 
@@ -521,7 +521,7 @@ validaotr.test('abc'); // error! doesn't match the format!
 IncludeValidator
 -----------------
 
-[Source](https://github.com/wilkerlucio/composed-validations/blob/master/lib/validators/include_validator.coffee)
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/include_validator.coffee)
 
 This validator tests a value against a pre-defined list of options.
 
@@ -544,7 +544,7 @@ validator.test('three'); // error, three is not included on the options
 RangeValidator
 ---------------
 
-[Source](https://github.com/wilkerlucio/composed-validations/blob/master/lib/validators/range_validator.coffee)
+[Source](https://github.com/composed-validations/composed-validations/blob/master/lib/validators/range_validator.coffee)
 
 This validator if a value is included into a given range.
 
@@ -1056,4 +1056,4 @@ _.humanizeFieldName('password_confirmation'); // Password confirmation
 More Information
 ----------------
 
-If you wanna know more tricks and tips about `composed-validations` check our [Wiki Pages](https://github.com/wilkerlucio/composed-validations/wiki/_pages).
+If you wanna know more tricks and tips about `composed-validations` check our [Wiki Pages](https://github.com/composed-validations/composed-validations/wiki/_pages).
