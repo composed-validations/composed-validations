@@ -1,7 +1,7 @@
 composed-validations
 ====================
 
-[![Build Status](https://drone.io/github.com/wilkerlucio/composed-validations/status.png)](https://drone.io/github.com/wilkerlucio/composed-validations/latest)
+[![Build Status](https://drone.io/github.com/composed-validations/composed-validations/status.png)](https://drone.io/github.com/composed-validations/composed-validations/latest)
 
 Javascript validation library that makes sense.
 
