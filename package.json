@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wilkerlucio/composed-validations.git"
+    "url": "https://github.com/composed-validations/composed-validations.git"
   },
   "keywords": [
     "validations"
@@ -22,7 +22,7 @@
   "author": "Wilker Lucio <wilkerlucio@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wilkerlucio/composed-validations/issues"
+    "url": "https://github.com/composed-validations/composed-validations/issues"
   },
   "dependencies": {
     "coffee-script": "~1.7.1",
