@@ -871,6 +871,25 @@ This is something I plan to improve over time, but for now I suggest you to use 
 AllValidator
 -------------
 
+Given the value is a list, runs the validator against of the items, if any item fails
+the validation, a `ValidationError` will be thrown.
+
+### Constructor
+
+```javascript
+new AllValidator(validator);
+```
+
+### Example
+
+```javascript
+var validator = new AllValidator(new PresenceValidator);
+
+validator.test([]); // empty lists give no errors
+validator.test([1, null, 'ok']); // fails because null is rejected by PresenceValidator
+validator.test(['a', {}, 3]); // all ok here
+```
+
 RephraseValidator
 -----------------
 
