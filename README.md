@@ -181,7 +181,7 @@ on specific fields, or if you want to run tests on a single field instead of run
 now let's take a look at the one you probably gonna use the most, the `StructValidator`:
 
 ```javascript
-var val = require('composed-validations');
+var cv = require('composed-validations');
 
 var addressValidator = cv.struct()
   .validate('street', cv.presence())
@@ -206,7 +206,7 @@ to.
 And going further to make sure you understand the power of composing validations, check this out:
 
 ```javascript
-var val = require('composed-validations');
+var cv = require('composed-validations');
 
 // let's say this will import the validator from the previous example
 addressValidator = require('./address_validator');
