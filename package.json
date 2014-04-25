@@ -30,7 +30,9 @@
   },
   "devDependencies": {
     "barriertest": "~0.4.1",
-    "sinon": "~1.9.1",
+    "sinon": "~1.9.1"
+  },
+  "peerDependencies": {
     "coffeeify": "~0.6.0"
   }
 }
