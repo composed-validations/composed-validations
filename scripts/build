@@ -1,4 +1,3 @@
 #!/bin/bash
 
 browserify lib/browser.coffee -o composed-validations.js
-npm version $1

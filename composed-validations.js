@@ -2,7 +2,7 @@
 window.ComposedValidations = require('./index.coffee');
 
 
-},{"./index.coffee":6}],2:[function(require,module,exports){
+},{"./index.coffee":5}],2:[function(require,module,exports){
 var DelegatedValidationError, ValidationError,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -22,7 +22,7 @@ module.exports = DelegatedValidationError = (function(_super) {
 })(ValidationError);
 
 
-},{"../errors/validation_error.coffee":5}],3:[function(require,module,exports){
+},{"../errors/validation_error.coffee":4}],3:[function(require,module,exports){
 var MultiValidationError, ValidationError, _,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
   __hasProp = {}.hasOwnProperty,
@@ -54,53 +54,7 @@ module.exports = MultiValidationError = (function(_super) {
 })(ValidationError);
 
 
-},{"../util.coffee":7,"./validation_error.coffee":5}],4:[function(require,module,exports){
-var MultiValidationError, StructValidationError,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-MultiValidationError = require('./multi_validation_error.coffee');
-
-module.exports = StructValidationError = (function(_super) {
-  __extends(StructValidationError, _super);
-
-  function StructValidationError() {
-    this.indexFieldErros = __bind(this.indexFieldErros, this);
-    StructValidationError.__super__.constructor.apply(this, arguments);
-    this.indexFieldErros();
-  }
-
-  StructValidationError.prototype.indexFieldErros = function() {
-    var assigned, err, field, multiVal, _base, _i, _len, _ref, _ref1;
-    this.generalErrors = [];
-    this.fieldErrors = {};
-    _ref = this.errors;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      err = _ref[_i];
-      assigned = false;
-      _ref1 = this.validator.fieldValidators;
-      for (field in _ref1) {
-        multiVal = _ref1[field];
-        (_base = this.fieldErrors)[field] || (_base[field] = []);
-        if (multiVal.validators.indexOf(err.validator) > -1) {
-          this.fieldErrors[field].push(err);
-          assigned = true;
-        }
-      }
-      if (!assigned) {
-        this.generalErrors.push(err);
-      }
-    }
-    return this;
-  };
-
-  return StructValidationError;
-
-})(MultiValidationError);
-
-
-},{"./multi_validation_error.coffee":3}],5:[function(require,module,exports){
+},{"../util.coffee":6,"./validation_error.coffee":4}],4:[function(require,module,exports){
 var ValidationError,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -122,28 +76,44 @@ module.exports = ValidationError = (function(_super) {
 })(Error);
 
 
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
+var klass, validator, validators, wrapConstruct, wrapped, _i, _len,
+  __slice = [].slice;
+
 module.exports = {
   Promise: require('promise'),
   _: require('./util.coffee'),
-  AllValidator: require('./validators/all_validator.coffee'),
-  DelegationalValidator: require('./validators/delegational_validator.coffee'),
-  FieldValidator: require('./validators/field_validator.coffee'),
-  FormatValidator: require('./validators/format_validator.coffee'),
-  IncludeValidator: require('./validators/include_validator.coffee'),
-  MultiValidator: require('./validators/multi_validator.coffee'),
-  NegateValidator: require('./validators/negate_validator.coffee'),
-  PresenceValidator: require('./validators/presence_validator.coffee'),
-  RangeValidator: require('./validators/range_validator.coffee'),
-  SequenceValidator: require('./validators/sequence_validator.coffee'),
-  StructValidator: require('./validators/struct_validator.coffee'),
   DelegatedValidationError: require('./errors/delegated_validation_error.coffee'),
   MultiValidationError: require('./errors/multi_validation_error.coffee'),
   ValidationError: require('./errors/validation_error.coffee')
 };
 
+validators = ['all', 'delegational', 'field', 'format', 'include', 'multi', 'negate', 'presence', 'range', 'rephrase', 'sequence', 'struct'];
 
-},{"./errors/delegated_validation_error.coffee":2,"./errors/multi_validation_error.coffee":3,"./errors/validation_error.coffee":5,"./util.coffee":7,"./validators/all_validator.coffee":8,"./validators/delegational_validator.coffee":9,"./validators/field_validator.coffee":10,"./validators/format_validator.coffee":11,"./validators/include_validator.coffee":12,"./validators/multi_validator.coffee":13,"./validators/negate_validator.coffee":14,"./validators/presence_validator.coffee":15,"./validators/range_validator.coffee":16,"./validators/sequence_validator.coffee":18,"./validators/struct_validator.coffee":19,"promise":21}],7:[function(require,module,exports){
+wrapConstruct = function(klass) {
+  return function() {
+    var args;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    return (function(func, args, ctor) {
+      ctor.prototype = func.prototype;
+      var child = new ctor, result = func.apply(child, args);
+      return Object(result) === result ? result : child;
+    })(klass, args, function(){});
+  };
+};
+
+for (_i = 0, _len = validators.length; _i < _len; _i++) {
+  validator = validators[_i];
+  klass = require('./validators/' + validator + '_validator.coffee');
+  wrapped = wrapConstruct(klass);
+  wrapped.klass = klass;
+  module.exports[validator] = wrapped;
+}
+
+module.exports.error = wrapConstruct(module.exports.ValidationError);
+
+
+},{"./errors/delegated_validation_error.coffee":2,"./errors/multi_validation_error.coffee":3,"./errors/validation_error.coffee":4,"./util.coffee":6,"promise":8}],6:[function(require,module,exports){
 var Promise, ValidationError,
   __slice = [].slice;
 
@@ -212,16 +182,6 @@ module.exports = {
     }
     return initial;
   },
-  has: function(object, lookupKey) {
-    var key, value;
-    for (key in object) {
-      value = object[key];
-      if (key === lookupKey) {
-        return true;
-      }
-    }
-    return false;
-  },
   lift: function(fn) {
     return function() {
       var args, err;
@@ -244,656 +204,7 @@ module.exports = {
 };
 
 
-},{"./errors/validation_error.coffee":5,"promise":21}],8:[function(require,module,exports){
-var AllValidator, DelegationalValidator, MultiValidator, Promise, ValidationError, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-Promise = require('promise');
-
-_ = require('../util.coffee');
-
-ValidationError = require('../errors/validation_error.coffee');
-
-DelegationalValidator = require('./delegational_validator.coffee');
-
-MultiValidator = require('./multi_validator.coffee');
-
-module.exports = AllValidator = (function(_super) {
-  __extends(AllValidator, _super);
-
-  function AllValidator() {
-    this.guardList = __bind(this.guardList, this);
-    this.testSync = __bind(this.testSync, this);
-    this.testAsync = __bind(this.testAsync, this);
-    this.test = __bind(this.test, this);
-    return AllValidator.__super__.constructor.apply(this, arguments);
-  }
-
-  AllValidator.prototype.test = function(list) {
-    this.guardList(list);
-    if (this.async()) {
-      return this.testAsync(list);
-    } else {
-      return this.testSync(list);
-    }
-  };
-
-  AllValidator.prototype.testAsync = function(list) {
-    var promises;
-    promises = _.map(list, _.lift(this.validator.test));
-    return Promise.all(promises).then((function(_this) {
-      return function() {
-        return list;
-      };
-    })(this), (function(_this) {
-      return function(err) {
-        return _this.throwError(err.message, list, err);
-      };
-    })(this));
-  };
-
-  AllValidator.prototype.testSync = function(list) {
-    var err, item, _i, _len;
-    try {
-      for (_i = 0, _len = list.length; _i < _len; _i++) {
-        item = list[_i];
-        this.validator.test(item);
-      }
-      return list;
-    } catch (_error) {
-      err = _error;
-      return this.throwError(err.message, list, err);
-    }
-  };
-
-  AllValidator.prototype.guardList = function(list) {
-    if ((list != null ? list.length : void 0) == null) {
-      throw new ValidationError("" + (_.json(list)) + " is not a list", list, this);
-    }
-  };
-
-  return AllValidator;
-
-})(DelegationalValidator);
-
-
-},{"../errors/validation_error.coffee":5,"../util.coffee":7,"./delegational_validator.coffee":9,"./multi_validator.coffee":13,"promise":21}],9:[function(require,module,exports){
-var DelegatedValidationError, DelegationalValidator, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-_ = require('../util.coffee');
-
-DelegatedValidationError = require('../errors/delegated_validation_error.coffee');
-
-module.exports = DelegationalValidator = (function() {
-  function DelegationalValidator(validator) {
-    this.validator = validator;
-    this.throwError = __bind(this.throwError, this);
-    this.runValidatorSync = __bind(this.runValidatorSync, this);
-    this.runValidatorAsync = __bind(this.runValidatorAsync, this);
-    this.runValidator = __bind(this.runValidator, this);
-    _.guardValidator(this.validator);
-  }
-
-  DelegationalValidator.prototype.async = function() {
-    var _base;
-    return (typeof (_base = this.validator).async === "function" ? _base.async() : void 0) || false;
-  };
-
-  DelegationalValidator.prototype.runValidator = function(value, callback) {
-    if (this.async()) {
-      return this.runValidatorAsync(value, callback);
-    } else {
-      return this.runValidatorSync(value, callback);
-    }
-  };
-
-  DelegationalValidator.prototype.runValidatorAsync = function(value, callback) {
-    return this.validator.test(value).then((function(_this) {
-      return function(res) {
-        return callback(null, res);
-      };
-    })(this), (function(_this) {
-      return function(err) {
-        return callback(err);
-      };
-    })(this));
-  };
-
-  DelegationalValidator.prototype.runValidatorSync = function(value, callback) {
-    var err, res;
-    res = null;
-    try {
-      res = this.validator.test(value);
-    } catch (_error) {
-      err = _error;
-      return callback(err);
-    }
-    return callback(null, res);
-  };
-
-  DelegationalValidator.prototype.throwError = function(message, value, err) {
-    _.guardValidationError(err);
-    throw new DelegatedValidationError(message, value, err, this);
-  };
-
-  return DelegationalValidator;
-
-})();
-
-
-},{"../errors/delegated_validation_error.coffee":2,"../util.coffee":7}],10:[function(require,module,exports){
-var DelegationalValidator, FieldValidator, ValidationError, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-_ = require('../util.coffee');
-
-ValidationError = require("../errors/validation_error.coffee");
-
-DelegationalValidator = require('./delegational_validator.coffee');
-
-module.exports = FieldValidator = (function(_super) {
-  __extends(FieldValidator, _super);
-
-  function FieldValidator(field, validator, options) {
-    this.field = field;
-    if (options == null) {
-      options = {};
-    }
-    this.test = __bind(this.test, this);
-    FieldValidator.__super__.constructor.call(this, validator);
-    this.options = _.defaults(options, {
-      optional: false
-    });
-  }
-
-  FieldValidator.prototype.test = function(object) {
-    var value;
-    if (!object) {
-      throw new ValidationError("Can't access field " + (_.json(this.field)) + " on " + (_.json(object)), object, this);
-    }
-    if (!_.has(object, this.field)) {
-      if (this.options.optional) {
-        return object;
-      }
-      throw new ValidationError("Field " + this.field + " is not present on the object " + (_.json(object)), object, this);
-    }
-    value = object[this.field];
-    return this.runValidator(value, (function(_this) {
-      return function(err) {
-        if (err) {
-          _this.throwError("" + (_.humanizeFieldName(_this.field)) + " " + err.message, object, err, _this);
-        }
-        return object;
-      };
-    })(this));
-  };
-
-  return FieldValidator;
-
-})(DelegationalValidator);
-
-
-},{"../errors/validation_error.coffee":5,"../util.coffee":7,"./delegational_validator.coffee":9}],11:[function(require,module,exports){
-var FormatValidator, ValidationError,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-ValidationError = require('../errors/validation_error.coffee');
-
-module.exports = FormatValidator = (function() {
-  function FormatValidator(format) {
-    this.format = format;
-    this.test = __bind(this.test, this);
-  }
-
-  FormatValidator.prototype.test = function(value) {
-    if (!this.format.exec(value)) {
-      throw new ValidationError("format is not valid", value, this);
-    }
-    return value;
-  };
-
-  return FormatValidator;
-
-})();
-
-
-},{"../errors/validation_error.coffee":5}],12:[function(require,module,exports){
-var IncludeValidator, ValidationError, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-_ = require("../util.coffee");
-
-ValidationError = require('../errors/validation_error.coffee');
-
-module.exports = IncludeValidator = (function() {
-  function IncludeValidator(possibilities) {
-    this.possibilities = possibilities;
-    this.test = __bind(this.test, this);
-  }
-
-  IncludeValidator.prototype.test = function(value) {
-    if (!_.contains(this.possibilities, value)) {
-      throw new ValidationError("" + (_.json(value)) + " is not included on the list " + (_.json(this.possibilities)), value, this);
-    }
-    return value;
-  };
-
-  return IncludeValidator;
-
-})();
-
-
-},{"../errors/validation_error.coffee":5,"../util.coffee":7}],13:[function(require,module,exports){
-var MultiValidationError, MultiValidator, Promise, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-_ = require('../util.coffee');
-
-MultiValidationError = require('../errors/multi_validation_error.coffee');
-
-Promise = require('promise');
-
-module.exports = MultiValidator = (function() {
-  function MultiValidator(options) {
-    if (options == null) {
-      options = {};
-    }
-    this.guardAsync = __bind(this.guardAsync, this);
-    this.testAsync = __bind(this.testAsync, this);
-    this.testSync = __bind(this.testSync, this);
-    this.multiTest = __bind(this.multiTest, this);
-    this.test = __bind(this.test, this);
-    this.add = __bind(this.add, this);
-    this.async = __bind(this.async, this);
-    this.options = _.defaults(options, {
-      async: false
-    });
-    this.validators = [];
-  }
-
-  MultiValidator.prototype.async = function() {
-    return this.options.async;
-  };
-
-  MultiValidator.prototype.add = function(validator) {
-    _.guardValidator(validator);
-    this.guardAsync(validator);
-    this.validators.push(validator);
-    return this;
-  };
-
-  MultiValidator.prototype.test = function(value) {
-    return this.multiTest(value, (function(_this) {
-      return function(errors) {
-        if (errors.length > 0) {
-          throw new MultiValidationError(null, value, _this, errors);
-        }
-        return value;
-      };
-    })(this));
-  };
-
-  MultiValidator.prototype.multiTest = function(value, handler) {
-    if (this.async()) {
-      return this.testAsync(value).then(handler);
-    } else {
-      return handler(this.testSync(value));
-    }
-  };
-
-  MultiValidator.prototype.testSync = function(value) {
-    var err, errors, validator, _i, _len, _ref;
-    errors = [];
-    _ref = this.validators;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      validator = _ref[_i];
-      try {
-        validator.test(value);
-      } catch (_error) {
-        err = _error;
-        _.guardValidationError(err);
-        errors.push(err);
-      }
-    }
-    return errors;
-  };
-
-  MultiValidator.prototype.testAsync = function(value) {
-    var errors, results;
-    errors = [];
-    results = _.map(this.validators, (function(_this) {
-      return function(v) {
-        return _.lift(function(value) {
-          return v.test(value);
-        })(value).then(void 0, function(err) {
-          _.guardValidationError(err);
-          errors.push(err);
-          return null;
-        });
-      };
-    })(this));
-    return Promise.all(results).then(function() {
-      return errors;
-    });
-  };
-
-  MultiValidator.prototype.guardAsync = function(validator) {
-    if ((typeof validator.async === "function" ? validator.async() : void 0) === true && !this.async()) {
-      throw new Error("Can't add async validators into a sync MultiValitor, use the {sync: true} option to allow async validators to be added.");
-    }
-  };
-
-  return MultiValidator;
-
-})();
-
-
-},{"../errors/multi_validation_error.coffee":3,"../util.coffee":7,"promise":21}],14:[function(require,module,exports){
-var DelegationalValidator, NegateValidator, ValidationError,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-ValidationError = require('../errors/validation_error.coffee');
-
-DelegationalValidator = require('./delegational_validator.coffee');
-
-module.exports = NegateValidator = (function(_super) {
-  __extends(NegateValidator, _super);
-
-  function NegateValidator() {
-    this.test = __bind(this.test, this);
-    return NegateValidator.__super__.constructor.apply(this, arguments);
-  }
-
-  NegateValidator.prototype.test = function(value) {
-    return this.runValidator(value, (function(_this) {
-      return function(err) {
-        var childError;
-        if (!err) {
-          childError = new ValidationError("", value, _this);
-          _this.throwError("validation negated failed", value, childError, _this);
-        }
-        return value;
-      };
-    })(this));
-  };
-
-  return NegateValidator;
-
-})(DelegationalValidator);
-
-
-},{"../errors/validation_error.coffee":5,"./delegational_validator.coffee":9}],15:[function(require,module,exports){
-var PresenceValidator, ValidationError, trim, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-_ = require('../util.coffee');
-
-ValidationError = require('../errors/validation_error.coffee');
-
-trim = function(string) {
-  return string.replace(/^\s+|\s+$/g, '');
-};
-
-module.exports = PresenceValidator = (function() {
-  function PresenceValidator() {
-    this.normalize = __bind(this.normalize, this);
-    this.test = __bind(this.test, this);
-  }
-
-  PresenceValidator.prototype.test = function(value) {
-    if (!this.normalize(value)) {
-      throw new ValidationError("can't be blank", value, this);
-    }
-    return value;
-  };
-
-  PresenceValidator.prototype.normalize = function(value) {
-    if (_.isString(value)) {
-      return trim(value);
-    } else {
-      return value;
-    }
-  };
-
-  return PresenceValidator;
-
-})();
-
-
-},{"../errors/validation_error.coffee":5,"../util.coffee":7}],16:[function(require,module,exports){
-var RangeValidator, ValidationError, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
-
-_ = require('../util.coffee');
-
-ValidationError = require('../errors/validation_error.coffee');
-
-module.exports = RangeValidator = (function() {
-  function RangeValidator(min, max) {
-    this.min = min;
-    this.max = max;
-    this.test = __bind(this.test, this);
-    if (this.min > this.max) {
-      throw new Error("Range Validator: input min (" + this.min + ") is bigger than the max (" + this.max + ")");
-    }
-  }
-
-  RangeValidator.prototype.test = function(value) {
-    if (value < this.min) {
-      throw new ValidationError("needs to be bigger than " + (_.json(this.min)), value, this);
-    }
-    if (value > this.max) {
-      throw new ValidationError("needs to be lower than " + (_.json(this.max)), value, this);
-    }
-    return value;
-  };
-
-  return RangeValidator;
-
-})();
-
-
-},{"../errors/validation_error.coffee":5,"../util.coffee":7}],17:[function(require,module,exports){
-var DelegationalValidator, RephraseValidator,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-DelegationalValidator = require('./delegational_validator.coffee');
-
-module.exports = RephraseValidator = (function(_super) {
-  __extends(RephraseValidator, _super);
-
-  function RephraseValidator(message, validator) {
-    this.message = message;
-    this.test = __bind(this.test, this);
-    RephraseValidator.__super__.constructor.call(this, validator);
-  }
-
-  RephraseValidator.prototype.test = function(value) {
-    return this.runValidator(value, (function(_this) {
-      return function(err) {
-        if (err) {
-          err.message = _this.message;
-          throw err;
-        }
-        return value;
-      };
-    })(this));
-  };
-
-  return RephraseValidator;
-
-})(DelegationalValidator);
-
-
-},{"./delegational_validator.coffee":9}],18:[function(require,module,exports){
-var MultiValidator, Promise, SequenceValidator, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-_ = require('../util.coffee');
-
-MultiValidator = require('./multi_validator.coffee');
-
-Promise = require('promise');
-
-module.exports = SequenceValidator = (function(_super) {
-  __extends(SequenceValidator, _super);
-
-  function SequenceValidator() {
-    this.testAsync = __bind(this.testAsync, this);
-    this.testSync = __bind(this.testSync, this);
-    this.test = __bind(this.test, this);
-    return SequenceValidator.__super__.constructor.apply(this, arguments);
-  }
-
-  SequenceValidator.prototype.test = function(value) {
-    if (this.async()) {
-      return this.testAsync(value);
-    } else {
-      return this.testSync(value);
-    }
-  };
-
-  SequenceValidator.prototype.testSync = function(value) {
-    return _.reduce(this.validators, value, function(acc, validator) {
-      return validator.test(acc);
-    });
-  };
-
-  SequenceValidator.prototype.testAsync = function(value) {
-    return _.reduce(this.validators, Promise.from(value), function(promise, validator) {
-      return promise.then(function(acc) {
-        return validator.test(acc);
-      });
-    });
-  };
-
-  return SequenceValidator;
-
-})(MultiValidator);
-
-
-},{"../util.coffee":7,"./multi_validator.coffee":13,"promise":21}],19:[function(require,module,exports){
-var FieldValidator, MultiValidator, RephraseValidator, StructValidationError, StructValidator, _,
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __slice = [].slice;
-
-_ = require('../util.coffee');
-
-MultiValidator = require('./multi_validator.coffee');
-
-FieldValidator = require('./field_validator.coffee');
-
-RephraseValidator = require('./rephrase_validator.coffee');
-
-StructValidationError = require('../errors/struct_validation_error.coffee');
-
-module.exports = StructValidator = (function(_super) {
-  __extends(StructValidator, _super);
-
-  function StructValidator() {
-    this._wrapErrorMessage = __bind(this._wrapErrorMessage, this);
-    this._wrapFieldValidator = __bind(this._wrapFieldValidator, this);
-    this.validatorForField = __bind(this.validatorForField, this);
-    this.testField = __bind(this.testField, this);
-    this.addFieldValidator = __bind(this.addFieldValidator, this);
-    this.addAssociated = __bind(this.addAssociated, this);
-    this.test = __bind(this.test, this);
-    this.validate = __bind(this.validate, this);
-    StructValidator.__super__.constructor.apply(this, arguments);
-    this.fieldValidators = {};
-  }
-
-  StructValidator.prototype.validate = function() {
-    var errorMessage, field, fields, validator, wrapped, _i, _j, _len;
-    fields = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), validator = arguments[_i++];
-    if (arguments.length > 2 && _.isString(validator)) {
-      errorMessage = validator;
-      validator = fields.pop();
-    }
-    for (_j = 0, _len = fields.length; _j < _len; _j++) {
-      field = fields[_j];
-      wrapped = this._wrapFieldValidator(field, validator);
-      if (errorMessage) {
-        wrapped = this._wrapErrorMessage(errorMessage, wrapped);
-      }
-      this.addAssociated(field, wrapped);
-    }
-    return this;
-  };
-
-  StructValidator.prototype.test = function(value) {
-    return this.multiTest(value, (function(_this) {
-      return function(errors) {
-        if (errors.length > 0) {
-          throw new StructValidationError(null, value, _this, errors);
-        }
-        return value;
-      };
-    })(this));
-  };
-
-  StructValidator.prototype.addAssociated = function() {
-    var field, fields, validator, _i, _j, _len;
-    fields = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), validator = arguments[_i++];
-    this.add(validator);
-    for (_j = 0, _len = fields.length; _j < _len; _j++) {
-      field = fields[_j];
-      this.addFieldValidator(field, validator);
-    }
-    return this;
-  };
-
-  StructValidator.prototype.addFieldValidator = function() {
-    var field, fields, validator, _base, _i, _j, _len;
-    fields = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), validator = arguments[_i++];
-    _.guardValidator(validator);
-    for (_j = 0, _len = fields.length; _j < _len; _j++) {
-      field = fields[_j];
-      (_base = this.fieldValidators)[field] || (_base[field] = new MultiValidator(this.options));
-      this.fieldValidators[field].add(validator);
-    }
-    return this;
-  };
-
-  StructValidator.prototype.testField = function(field, value) {
-    return this.validatorForField(field).test(value);
-  };
-
-  StructValidator.prototype.validatorForField = function(field) {
-    var validators;
-    if (!(validators = this.fieldValidators[field])) {
-      throw new Error("There are no validators associated with the field " + (_.json(field)));
-    }
-    return validators;
-  };
-
-  StructValidator.prototype._wrapFieldValidator = function(field, validator) {
-    return new FieldValidator(field, validator);
-  };
-
-  StructValidator.prototype._wrapErrorMessage = function(message, validator) {
-    return new RephraseValidator(message, validator);
-  };
-
-  return StructValidator;
-
-})(MultiValidator);
-
-
-},{"../errors/struct_validation_error.coffee":4,"../util.coffee":7,"./field_validator.coffee":10,"./multi_validator.coffee":13,"./rephrase_validator.coffee":17}],20:[function(require,module,exports){
+},{"./errors/validation_error.coffee":4,"promise":8}],7:[function(require,module,exports){
 'use strict';
 
 var asap = require('asap')
@@ -1000,7 +311,7 @@ function doResolve(fn, onFulfilled, onRejected) {
   }
 }
 
-},{"asap":22}],21:[function(require,module,exports){
+},{"asap":9}],8:[function(require,module,exports){
 'use strict';
 
 //This file contains then/promise specific extensions to the core promise API
@@ -1174,7 +485,7 @@ Promise.race = function (values) {
   });
 }
 
-},{"./core.js":20,"asap":22}],22:[function(require,module,exports){
+},{"./core.js":7,"asap":9}],9:[function(require,module,exports){
 (function (process){
 
 // Use the fastest possible means to execute a task in a future turn
@@ -1291,7 +602,7 @@ module.exports = asap;
 
 
 }).call(this,require("/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":23}],23:[function(require,module,exports){
+},{"/usr/local/lib/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":10}],10:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
