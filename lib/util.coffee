@@ -19,6 +19,8 @@ module.exports =
 
   isValidator: (value) -> @isFunction(value?.test)
 
+  isValidationError: (value) -> value instanceof ValidationError
+
   isArray: (value) ->
     (value && typeof value == 'object' && typeof value.length == 'number' &&
       toString.call(value) == '[object Array]') || false
@@ -27,7 +29,7 @@ module.exports =
     unless @isValidator(validator)
       throw new TypeError("#{@json validator} is not a valid validator")
 
-  guardValidationError: (err) -> throw err unless err instanceof ValidationError
+  guardValidationError: (err) -> throw err unless @isValidationError(err)
 
   contains: (list, value) ->
     for obj in list

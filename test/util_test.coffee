@@ -57,6 +57,12 @@ describe "Util", ->
       expect(_.isArray(arguments)).false
       expect(_.isArray([])).true
 
+  describe "#isValidationError", ->
+    it "checks if a value is an ValidationError", ->
+      expect(_.isValidationError(new ValidationError())).true
+      expect(_.isValidationError(new Error())).false
+      expect(_.isValidationError({})).false
+
   describe "#guardValidator", ->
     it "raises an error if the given argument is not validator", ->
       expect(-> _.guardValidator(null)).throw('null is not a valid validator')
