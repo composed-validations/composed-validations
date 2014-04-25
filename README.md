@@ -79,9 +79,9 @@ Basic validations
 Let's start with the simplest validations that just checks if a value is present:
 
 ```javascript
-var validations = require('composed-validations');
+var cv = require('composed-validations');
 
-var validator = new validations.PresenceValidator()
+var validator = cv.presence()
 
 validator.test(null); // will raise a ValidationError, since null is not a present value
 validator.test('ok'); // will just not raise any errors, since it's valid
@@ -90,9 +90,9 @@ validator.test('ok'); // will just not raise any errors, since it's valid
 And let's look at one more, just for the sake of exemplify:
 
 ```javascript
-var validations = require('composed-validations');
+var cv = require('composed-validations');
 
-var validator = new validations.RangeValidator(10, 20)
+var validator = cv.range(10, 20)
 
 validator.test(9); // will raise a ValidationError, since null is out of range
 validator.test(10); // will just not raise any errors, since it's valid
@@ -123,7 +123,7 @@ on this doc.
 If you are not familiar with the `Promise` concept, this is a good place to start: [https://www.promisejs.org](https://www.promisejs.org)
 
 Composing Validations
---------------------
+---------------------
 
 Ok, now that you got the basics, let's go a step further, we are going to get into object fields validations, but before
 that, let's first understand what "complex multi-field validations" are about; what happens when you do a complex
@@ -131,14 +131,11 @@ validation is actually just having many validations that runs togheter. And for 
 let's introduce the `MultiValidator`:
 
 ```javascript
-var val = require('composed-validations'),
-    PresenceValidator = val.PresenceValidator,
-    IncludeValidator = val.IncludeValidator,
-    MultiValidator = val.MultiValidator;
+var cv = require('composed-validations');
 
-var validator = new MultiValidator()
-  .add(new PresenceValidator())
-  .add(new IncludeValidator(['optionA', 'optionB']);
+var validator = cv.multi()
+  .add(cv.presence())
+  .add(cv.include(['optionA', 'optionB']);
 
 validator.test(null); // will raise an error that has information from both failures
 ```
@@ -149,12 +146,10 @@ objects? Objects are just values as strings, lists or any other... We just need 
 object, and for that we have the `FieldValidator`:
 
 ```javascript
-var val = require('composed-validations'),
-    PresenceValidator = val.PresenceValidator,
-    FieldValidator = val.FieldValidator;
+var cv = require('composed-validations');
 
 // let's create a PresenceValidator, that is wrapped by a FieldValidator
-var validator = new FieldValidator('name', new PresenceValidator());
+var validator = cv.field('name', cv.presence());
 
 validator.test(null); // will raise an error because it cannot access fields on falsy values
 validator.test({age: 15}); // will raise an error because the field 'name' is not present on the object
@@ -170,14 +165,11 @@ So, know we know 2 things:
 Do the math, and you will realise you can validate complex objects as:
 
 ```javascript
-var val = require('composed-validations'),
-    PresenceValidator = val.PresenceValidator,
-    FieldValidator = val.FieldValidator,
-    MultiValidator = val.MultiValidator;
+var cv = require('composed-validations');
 
-var validator = new MultiValidator()
-  .add(new FieldValidator('name', new PresenceValidator())
-  .add(new FieldValidator('email', new PresenceValidator());
+var validator = cv.multi()
+  .add(cv.field('name', cv.presence())
+  .add(cv.field('email', cv.presence());
 
 validator.test({name: "cgp", email: "hello@internet.com"});
 ```
@@ -189,15 +181,13 @@ on specific fields, or if you want to run tests on a single field instead of run
 now let's take a look at the one you probably gonna use the most, the `StructValidator`:
 
 ```javascript
-var val = require('composed-validations'),
-    PresenceValidator = val.PresenceValidator,
-    StructValidator = val.StructValidator;
+var val = require('composed-validations');
 
-var addressValidator = new StructValidator()
-  .validate('street', new PresenceValidator())
-  .validate('zip', new FormatValidator(/\d{5}/) // silly zip format
-  .validate('city', new PresenceValidator())
-  .validate('state', new PresenceValidator());
+var addressValidator = cv.struct()
+  .validate('street', cv.presence())
+  .validate('zip', cv.format(/\d{5}/) // silly zip format
+  .validate('city', cv.presence())
+  .validate('state', cv.presence());
 
 addressValidator.test({
   street: 'street name',
@@ -216,18 +206,15 @@ to.
 And going further to make sure you understand the power of composing validations, check this out:
 
 ```javascript
-var val = require('composed-validations'),
-    PresenceValidator = val.PresenceValidator,
-    IncludeValidator = val.IncludeValidator,
-    StructValidator = val.StructValidator;
+var val = require('composed-validations');
 
 // let's say this will import the validator from the previous example
 addressValidator = require('./address_validator');
 
-userValidator = new StructValidator();
-  .validate('name', new PresenceValidator())
-  .validate('age', new RangeValidator(0, 200))
-  .validate('userType', new IncludeValidator(['member', 'admin']))
+userValidator = cv.struct();
+  .validate('name', cv.presence())
+  .validate('age', cv.range(0, 200))
+  .validate('userType', cv.include(['member', 'admin']))
   // in fact, the address validator is just another composed validator, so just send it!
   .validate('address', addressValidator);
 
@@ -274,7 +261,7 @@ var cv = require('custom-validations');
 var equalToHelloValidator = {
   test: function(value) {
     if (value != 'hello') {
-      throw new cv.ValidationError('is not equal to hello', value, this);
+      throw cv.error('is not equal to hello', value, this);
     }
 
     // you must return the same input as given to you, unless you are writing a
@@ -295,7 +282,7 @@ errors (that would be handle in different ways). The signature for instantiating
 `ValidationError` is:
 
 ```javascript
-new ValidationError(message, value, validator);
+cv.error(message, value, validator);
 ```
 
 This information helps other validators and errors handlers to deal better with error
@@ -310,12 +297,12 @@ var cv = require('custom-validations');
 var equalToHelloValidator = {
   test: function(value) {
     if (value != 'hello') {
-      throw new cv.ValidationError('is not equal to hello', value, this);
+      throw cv.error('is not equal to hello', value, this);
     }
   }
 };
 
-var modelValidator = new cv.StructValidator()
+var modelValidator = cv.struct()
   .validate('someField', equalToHelloValidator);
 
 modelValidator.test({someField: 'hello'}); // ok
@@ -332,13 +319,13 @@ var equalToValidator = function (given) {
   return {
     test: function(value) {
       if (value != given) {
-        throw new cv.ValidationError("is not equal to " + JSON.stringify(given), value, this);
+        throw cv.error("is not equal to " + JSON.stringify(given), value, this);
       }
     }
   };
 };
 
-var modelValidator = new cv.StructValidator()
+var modelValidator = cv.struct()
   .validate('someField', equalToValidator('hello'));
 
 modelValidator.test({someField: 'hello'}); // ok
@@ -357,11 +344,11 @@ var EqualToValidator = function (given) {
 
 EqualToValidator.prototype.test = function(value) {
   if (value != this.given) {
-    throw new cv.ValidationError("is not equal to " + JSON.stringify(this.given), value, this);
+    throw cv.error("is not equal to " + JSON.stringify(this.given), value, this);
   }
 };
 
-var modelValidator = new cv.StructValidator()
+var modelValidator = cv.struct()
   .validate('someField', new EqualToValidator('hello'));
 
 modelValidator.test({someField: 'hello'}); // ok
@@ -413,7 +400,7 @@ var delayedValidator = {
           resolve(null);
         } else {
           // when error happens, raise it! promises style
-          reject(new cv.ValidationError("is not equal to hello", value, _this);
+          reject(cv.error("is not equal to hello", value, _this);
         }
       }, 500);
     });
@@ -431,8 +418,8 @@ One of the reasons that you have to explicitly say that your validator is async,
 protect you on situations like this:
 
 ```javascript
-new StructValidator() // note this is a "sync" kind of multi validator
-  .validate('name', new PresenceValidator) // ok, presence if sync
+cv.struct() // note this is a "sync" kind of multi validator
+  .validate('name', cv.presence()) // ok, presence if sync
   .validate('hello', delayedValidator); // this will raise an error!
 ```
 
@@ -443,8 +430,8 @@ but it's impossible on the other direction. So, if you add an `async` validator 
 ask you to make your multi validator `async`:
 
 ```javascript
-new StructValidator({async: true})
-  .validate('name', new PresenceValidator)
+cv.struct({async: true})
+  .validate('name', cv.presence())
   .validate('hello', delayedValidator); // now it's all fine
 ```
 
@@ -476,13 +463,14 @@ This validator with check if the given value is present.
 ### Constructor
 
 ```javascript
-new PresenceValidator();
+cv.presence();
 ```
 
 ### Example
 
 ```javascript
-var validator = new PresenceValidator();
+var cv = require('composed-validations');
+var validator = cv.presence();
 
 // those will throw an error
 validator.test(undefined);
@@ -506,13 +494,14 @@ This validator tests a value against a [Regular Expression](https://developer.mo
 ### Constructor
 
 ```javascript
-new FormatValidator(RegExp format);
+cv.format(RegExp format);
 ```
 
 ### Example
 
 ```javascript
-var validator = new FormatValidator(/\d+/);
+var cv = require('composed-validations');
+var validator = cv.format(/\d+/);
 
 validator.test('ab12'); // ok
 validaotr.test('abc'); // error! doesn't match the format!
@@ -528,13 +517,14 @@ This validator tests a value against a pre-defined list of options.
 ### Constructor
 
 ```javascript
-new IncludeValidator(Array options);
+cv.include(Array options);
 ```
 
 ### Example
 
 ```javascript
-var validator = new IncludeValidator(['one', 'two']);
+var cv = require('composed-validations');
+var validator = cv.include(['one', 'two']);
 
 validator.test('one'); // ok
 validator.test('two'); // ok
@@ -551,7 +541,7 @@ This validator if a value is included into a given range.
 ### Constructor
 
 ```javascript
-new RangeValidator(min, max);
+cv.range(min, max);
 ```
 
 Remember that `min` and `max` can be pretty much anything, it will work on numbers, but also on strings.
@@ -561,7 +551,8 @@ The validator will raise an error on construction if you your `min` is bigger th
 ### Example
 
 ```javascript
-var validator = new RangeValidator(-3, 12);
+var cv = require('composed-validations');
+var validator = cv.range(-3, 12);
 
 validator.test(-3); // ok, still on the range
 validator.test(-4); // error
@@ -582,7 +573,7 @@ This validator enables you to create a group of validations that will run in ord
 ### Constructor
 
 ```javascript
-new MultiValidator({
+cv.multi({
   async: false
 });
 ```
@@ -612,10 +603,12 @@ you into the error object (also, in case of async, the validators will run in pa
 A sync example:
 
 ```javascript
-var validator = new MultiValidator();
+var cv = require('composed-validations');
+var validator = cv.multi();
 
-validator.add(new MinValidator(2));
-validator.add(new MaxValidator(5));
+// pretend those validators exists for now, they may in future
+validator.add(minValidator(2));
+validator.add(maxValidator(5));
 
 validator.test(2); // ok
 
@@ -630,10 +623,11 @@ try {
 An async example:
 
 ```javascript
-var validator = new MultiValidator({async: true});
+var cv = require('composed-validations');
+var validator = cv.multi({async: true});
 
-validator.add(new PresenceValidator());
-validator.add(new SomeAsyncValidator());
+validator.add(cv.presence());
+validator.add(someAsyncValidator());
 
 validator.test(function() {
   // all ok, do your thing
@@ -654,7 +648,7 @@ a few more.
 ### Constructor
 
 ```javascript
-new StructValidator({
+cv.struct({
   async: false
 });
 ```
@@ -676,7 +670,7 @@ This is probably the method that you will use the most, because it address the m
 to validates the data on a field).
 
 ```javascript
-validator.validate('name', new PresenceValidator);
+validator.validate('name', cv.presence());
 validator.test({name: "someone"});
 validator.testField('name'); // will also run the test
 ```
@@ -687,7 +681,7 @@ It works almost as same as `validate`, expect that it **will not** wrap the vali
 
 ```javascript
 // this will end up as same as the previous validate example
-validator.addAssociated('name', new FieldValidator('name', new PresenceValidator));
+validator.addAssociated('name', cv.field('name', cv.presence()));
 validator.test({name: "someone"});
 validator.testField('name', {name: "someone"}); // will also run the test
 ```
@@ -698,7 +692,7 @@ It is like `addAssociated` except that it **will not** add the validator into th
 the validator will only be called when you ask to validate that specific field, but no the general validation.
 
 ```javascript
-validator.addFieldValidator('name', new FieldValidator('name', new PresenceValidator));
+validator.addFieldValidator('name', cv.field('name', cv.presence()));
 validator.test({name: "someone"}); // this will not trigger any validators
 validator.testField('name', {name: "someone"}); // this will run the registered validator for the field
 ```
@@ -715,9 +709,10 @@ Remember that the behavior is same as the `test` method on the regard of sync/as
 How to use it:
 
 ```javascript
-var validator = new StructValidator({async: true});
+var cv = require('composed-validations');
+var validator = cv.struct({async: true});
 
-validator.validate('name', 'username', new PresenceValidator());
+validator.validate('name', 'username', cv.presence());
 // lets say this validator does an ajax call to verify if the user name is available
 validator.validate('username', uniqUserNameValidator);
 
@@ -738,18 +733,20 @@ validator.testField('name', {name: "", username: ""}).done(function() {
 ### Example
 
 ```javascript
+var cv = require('composed-validations');
+
 var passwordMatchValidator = {
   test: (value) {
     if (value.password != value.password_confirmation) {
-      throw new ValidationError("Password confirmation doesn't match the password", value, this);
+      throw cv.error("Password confirmation doesn't match the password", value, this);
     }
   }
 };
 
-var userValidator = new StructValidator();
+var userValidator = cv.struct();
 
-userValidator.validate('name', 'password', new PresenceValidator());
-userValidator.validate('email', new FormatValidator(/\w+@\w+\.\w+/));
+userValidator.validate('name', 'password', cv.presence());
+userValidator.validate('email', cv.format(/\w+@\w+\.\w+/));
 userValidator.addAssociated('password_confirmation', passwordMatchValidator);
 
 try {
@@ -796,7 +793,7 @@ writing a validator about transforming data.
 ### Constructor
 
 ```javascript
-new SequenceValidator({
+cv.sequence({
   async: false
 });
 ```
@@ -809,8 +806,8 @@ The options are optional, for details on the async option see [MultiValidator](#
 // let's supposed this is some library that does a request and checks something
 var checkRemoteNumber = require('check-remote-number')
 
-var idValidator = new SequenceValidator({async: true})
-  .add(new FormatValidator(\d+))
+var idValidator = cv.sequence({async: true})
+  .add(cv.format(\d+))
   .add(checkRemoteNumber);
 
 idValidator.test("ha"); // will fail on the format validator, will not call teh service
@@ -830,7 +827,7 @@ The field validator will run a given validator into a specific field of an objec
 ### Constructor
 
 ```javascript
-new FieldValidator(field, validator, {
+cv.field(field, validator, {
   optional: false
 });
 ```
@@ -846,7 +843,8 @@ Where:
 ### Example
 
 ```javascript
-var validator = new FieldValidator('name', new PresenceValidator(), {optional: true});
+var cv = require('composed-validations');
+var validator = cv.field('name', cv.presence(), {optional: true});
 
 // will fail because it can't access fields on null (same for false or undefined)
 validator.test(null);
@@ -871,13 +869,14 @@ The negate validator will invert the result of a given validator.
 ### Constructor
 
 ```javascript
-new NegateValidator(validator)
+cv.negate(validator)
 ```
 
 ### Example
 
 ```javascript
-var validator = new NegateValidator(new PresenceValidator());
+var cv = require('composed-validations');
+var validator = cv.negate(cv.presence());
 
 validator.test('hey'); // will fail, inverting the presence validator result
 validator.test(null); // ok
@@ -901,13 +900,14 @@ the validation, a `ValidationError` will be thrown.
 ### Constructor
 
 ```javascript
-new AllValidator(validator);
+cv.all(validator);
 ```
 
 ### Example
 
 ```javascript
-var validator = new AllValidator(new PresenceValidator);
+var cv = require('composed-validations');
+var validator = cv.all(cv.presence());
 
 validator.test([]); // empty lists give no errors
 validator.test([1, null, 'ok']); // fails because null is rejected by PresenceValidator
@@ -924,13 +924,14 @@ Changes the error from a given validator when it fails.
 ### Constructor
 
 ```javascript
-new RephraseValidator(newMessage, validator)
+cv.rephrase(newMessage, validator)
 ```
 
 ### Example
 
 ```javascript
-var validator = new RephraseValidator('feed me something true dude...', new PresenceValidator());
+var cv = require('composed-validations');
+var validator = cv.rephrase('feed me something true dude...', cv.presence());
 
 try {
   validator.test(null);
@@ -1003,7 +1004,7 @@ Detects if a given `value` is a validator (that means, it has a property `test` 
 a `Function`)
 
 ```javascript
-_.isValidator(new PresenceValidator()); // true
+_.isValidator(cv.presence()); // true
 _.isValidator({}); // false
 ```
 
