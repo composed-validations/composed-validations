@@ -47,13 +47,46 @@ module.exports = class StructValidator extends MultiValidator
 
     this
 
-  testField: (field, value) => @validatorForField(field).test(value)
+  testField: (field, value) =>
+    validator = @validatorForField(field)
+    value = @valueForField(field, value)
+
+    validator.test(value)
 
   validatorForField: (field) =>
-    unless validators = @fieldValidators[field]
+    unless validators = @lookupForField(field)
       throw new Error("There are no validators associated with the field #{_.json field}")
 
     validators
+
+  lookupForField: (field, context = @fieldValidators) =>
+    [head, tail...] = field.split('.')
+
+    if tail.length > 0
+      for validator in context[head].validators
+        subStruct = validator.validator.fieldValidators
+
+        if subStruct
+          context = subStruct
+
+          continue unless context[tail[0]]
+
+          break
+
+      @lookupForField(tail.join('.'), context)
+    else
+      context[head]
+
+  valueForField: (field, value) =>
+    [head, tail...] = field.split('.')
+
+    unless value.hasOwnProperty(head)
+      throw new Error("#{_.json value} doesn't have the property #{_.json head}")
+
+    if tail.length > 0
+      @valueForField(tail.join('.'), value[head])
+    else
+      value
 
   _wrapFieldValidator: (field, validator) => new FieldValidator(field, validator)
   _wrapErrorMessage: (message, validator) => new RephraseValidator(message, validator)

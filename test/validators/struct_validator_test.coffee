@@ -123,6 +123,43 @@ describe "Struct Validator", ->
       expect(onOtherFieldValidator.test.calledWith('value'), 'on other field must not be called').false
       expect(onFieldByAssociationValidator.test.calledWith(name: 'value'), 'associated must be called').true
 
+    it "is able to run fields into nested structures", (validator) ->
+      notCall = sinon.stub()
+      call = sinon.stub()
+
+      substruct = new StructValidator()
+      substruct.validate('name', test: call)
+      substruct.validate('other', test: notCall)
+
+      validator.validate('subfield', test: notCall)
+      validator.validate('subfield', new StructValidator().validate('other', test: notCall))
+      validator.validate('subfield', substruct)
+      validator.validate('subfield', new StructValidator().validate('name', test: notCall))
+      validator.validate('extra', test: notCall)
+
+      validator.testField('subfield.name', {subfield: {name: "ok", other: "value"}})
+
+      expect(call.calledWith("ok")).true
+      expect(notCall.called).false
+
+    it "throws correct errors for field lookup problems", (validator) ->
+      addressValidator = new StructValidator()
+      addressValidator.validate('street', 'city', test: ->)
+
+      validator.validate('address', addressValidator)
+
+      expect(-> validator.testField('name')).throw('There are no validators associated with the field "name"')
+      expect(-> validator.testField('address.number')).throw('There are no validators associated with the field "address.number"')
+
+    it "throws correct errors for value lookup problems", (validator) ->
+      addressValidator = new StructValidator()
+      addressValidator.validate('street', 'city', test: ->)
+
+      validator.validate('address', addressValidator)
+
+      expect(-> validator.testField('address.street', {})).throw('{} doesn\'t have the property "address"')
+      expect(-> validator.testField('address.street', {address: {}})).throw('{} doesn\'t have the property "street"')
+
   describe "validatorForField", ->
     it "throws an error when the field has no associated validations", (validator) ->
       expect(-> validator.validatorForField('name', 'value')).throw('There are no validators associated with the field "name"')
