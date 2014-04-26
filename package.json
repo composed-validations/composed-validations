@@ -33,6 +33,7 @@
     "sinon": "~1.9.1"
   },
   "peerDependencies": {
-    "coffeeify": "~0.6.0"
+    "coffeeify": "~0.6.0",
+    "coffee-loader": "~0.7.1"
   }
 }
