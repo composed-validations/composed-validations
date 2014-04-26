@@ -54,10 +54,10 @@ module.exports = class StructValidator extends MultiValidator
     validator.test(value)
 
   validatorForField: (field) =>
-    unless validators = @lookupForField(field)
+    unless validator = @lookupForField(field)
       throw new Error("There are no validators associated with the field #{_.json field}")
 
-    validators
+    validator
 
   lookupForField: (field, context = @fieldValidators) =>
     [head, tail...] = field.split('.')
