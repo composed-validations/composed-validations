@@ -45,15 +45,22 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	window.ComposedValidations = __webpack_require__(1);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var klass, validator, validators, wrapConstruct, wrapped, _i, _len,
 	  __slice = [].slice;
 
 	module.exports = {
-	  Promise: __webpack_require__(6),
+	  Promise: __webpack_require__(7),
 	  _: __webpack_require__(2),
-	  DelegatedValidationError: __webpack_require__(3),
-	  MultiValidationError: __webpack_require__(4),
-	  ValidationError: __webpack_require__(5)
+	  DelegatedValidationError: __webpack_require__(4),
+	  MultiValidationError: __webpack_require__(5),
+	  ValidationError: __webpack_require__(6)
 	};
 
 	validators = ['all', 'delegational', 'field', 'format', 'include', 'multi', 'negate', 'presence', 'range', 'rephrase', 'sequence', 'struct'];
@@ -72,7 +79,7 @@
 
 	for (_i = 0, _len = validators.length; _i < _len; _i++) {
 	  validator = validators[_i];
-	  klass = __webpack_require__(1)("./" + validator + '_validator.coffee');
+	  klass = __webpack_require__(3)("./" + validator + '_validator.coffee');
 	  wrapped = wrapConstruct(klass);
 	  wrapped.klass = klass;
 	  module.exports[validator] = wrapped;
@@ -82,46 +89,15 @@
 
 
 /***/ },
-/* 1 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var map = {
-		"./all_validator.coffee": 7,
-		"./delegational_validator.coffee": 8,
-		"./field_validator.coffee": 9,
-		"./format_validator.coffee": 10,
-		"./include_validator.coffee": 11,
-		"./multi_validator.coffee": 12,
-		"./negate_validator.coffee": 13,
-		"./presence_validator.coffee": 14,
-		"./range_validator.coffee": 15,
-		"./rephrase_validator.coffee": 16,
-		"./sequence_validator.coffee": 17,
-		"./struct_validator.coffee": 18
-	};
-	function webpackContext(req) {
-		return __webpack_require__(webpackContextResolve(req));
-	};
-	function webpackContextResolve(req) {
-		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
-	};
-	webpackContext.keys = function webpackContextKeys() {
-		return Object.keys(map);
-	};
-	webpackContext.resolve = webpackContextResolve;
-	module.exports = webpackContext;
-
-
-/***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Promise, ValidationError,
 	  __slice = [].slice;
 
-	Promise = __webpack_require__(6);
+	Promise = __webpack_require__(7);
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
 	module.exports = {
 	  json: function(obj) {
@@ -213,11 +189,42 @@
 /* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var map = {
+		"./all_validator.coffee": 8,
+		"./delegational_validator.coffee": 9,
+		"./field_validator.coffee": 10,
+		"./format_validator.coffee": 11,
+		"./include_validator.coffee": 12,
+		"./multi_validator.coffee": 13,
+		"./negate_validator.coffee": 14,
+		"./presence_validator.coffee": 15,
+		"./range_validator.coffee": 16,
+		"./rephrase_validator.coffee": 17,
+		"./sequence_validator.coffee": 18,
+		"./struct_validator.coffee": 19
+	};
+	function webpackContext(req) {
+		return __webpack_require__(webpackContextResolve(req));
+	};
+	function webpackContextResolve(req) {
+		return map[req] || (function() { throw new Error("Cannot find module '" + req + "'.") }());
+	};
+	webpackContext.keys = function webpackContextKeys() {
+		return Object.keys(map);
+	};
+	webpackContext.resolve = webpackContextResolve;
+	module.exports = webpackContext;
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var DelegatedValidationError, ValidationError,
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
 	module.exports = DelegatedValidationError = (function(_super) {
 	  __extends(DelegatedValidationError, _super);
@@ -233,7 +240,7 @@
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MultiValidationError, ValidationError, _,
@@ -243,7 +250,7 @@
 
 	_ = __webpack_require__(2);
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
 	module.exports = MultiValidationError = (function(_super) {
 	  __extends(MultiValidationError, _super);
@@ -268,7 +275,7 @@
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var ValidationError,
@@ -293,7 +300,7 @@
 
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -301,7 +308,7 @@
 	//This file contains then/promise specific extensions to the core promise API
 
 	var Promise = __webpack_require__(20)
-	var asap = __webpack_require__(21)
+	var asap = __webpack_require__(22)
 
 	module.exports = Promise
 
@@ -471,7 +478,7 @@
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AllValidator, DelegationalValidator, MultiValidator, Promise, ValidationError, _,
@@ -479,15 +486,15 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	Promise = __webpack_require__(6);
+	Promise = __webpack_require__(7);
 
 	_ = __webpack_require__(2);
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
-	DelegationalValidator = __webpack_require__(8);
+	DelegationalValidator = __webpack_require__(9);
 
-	MultiValidator = __webpack_require__(12);
+	MultiValidator = __webpack_require__(13);
 
 	module.exports = AllValidator = (function(_super) {
 	  __extends(AllValidator, _super);
@@ -549,7 +556,7 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DelegatedValidationError, DelegationalValidator, _,
@@ -557,7 +564,7 @@
 
 	_ = __webpack_require__(2);
 
-	DelegatedValidationError = __webpack_require__(3);
+	DelegatedValidationError = __webpack_require__(4);
 
 	module.exports = DelegationalValidator = (function() {
 	  function DelegationalValidator(validator) {
@@ -617,7 +624,7 @@
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DelegationalValidator, FieldValidator, ValidationError, _,
@@ -627,9 +634,9 @@
 
 	_ = __webpack_require__(2);
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
-	DelegationalValidator = __webpack_require__(8);
+	DelegationalValidator = __webpack_require__(9);
 
 	module.exports = FieldValidator = (function(_super) {
 	  __extends(FieldValidator, _super);
@@ -674,13 +681,13 @@
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var FormatValidator, ValidationError,
 	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
 	module.exports = FormatValidator = (function() {
 	  function FormatValidator(format) {
@@ -701,7 +708,7 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var IncludeValidator, ValidationError, _,
@@ -709,7 +716,7 @@
 
 	_ = __webpack_require__(2);
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
 	module.exports = IncludeValidator = (function() {
 	  function IncludeValidator(possibilities) {
@@ -730,7 +737,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MultiValidationError, MultiValidator, Promise, _,
@@ -738,9 +745,9 @@
 
 	_ = __webpack_require__(2);
 
-	MultiValidationError = __webpack_require__(4);
+	MultiValidationError = __webpack_require__(5);
 
-	Promise = __webpack_require__(6);
+	Promise = __webpack_require__(7);
 
 	module.exports = MultiValidator = (function() {
 	  function MultiValidator(options) {
@@ -838,7 +845,7 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DelegationalValidator, NegateValidator, ValidationError,
@@ -846,9 +853,9 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
-	DelegationalValidator = __webpack_require__(8);
+	DelegationalValidator = __webpack_require__(9);
 
 	module.exports = NegateValidator = (function(_super) {
 	  __extends(NegateValidator, _super);
@@ -877,7 +884,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var PresenceValidator, ValidationError, trim, _,
@@ -885,7 +892,7 @@
 
 	_ = __webpack_require__(2);
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
 	trim = function(string) {
 	  return string.replace(/^\s+|\s+$/g, '');
@@ -918,7 +925,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var RangeValidator, ValidationError, _,
@@ -926,7 +933,7 @@
 
 	_ = __webpack_require__(2);
 
-	ValidationError = __webpack_require__(5);
+	ValidationError = __webpack_require__(6);
 
 	module.exports = RangeValidator = (function() {
 	  function RangeValidator(min, max) {
@@ -954,7 +961,7 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var DelegationalValidator, RephraseValidator,
@@ -962,7 +969,7 @@
 	  __hasProp = {}.hasOwnProperty,
 	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-	DelegationalValidator = __webpack_require__(8);
+	DelegationalValidator = __webpack_require__(9);
 
 	module.exports = RephraseValidator = (function(_super) {
 	  __extends(RephraseValidator, _super);
@@ -991,7 +998,7 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var MultiValidator, Promise, SequenceValidator, _,
@@ -1001,9 +1008,9 @@
 
 	_ = __webpack_require__(2);
 
-	MultiValidator = __webpack_require__(12);
+	MultiValidator = __webpack_require__(13);
 
-	Promise = __webpack_require__(6);
+	Promise = __webpack_require__(7);
 
 	module.exports = SequenceValidator = (function(_super) {
 	  __extends(SequenceValidator, _super);
@@ -1043,7 +1050,7 @@
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var FieldValidator, MultiValidator, RephraseValidator, StructValidationError, StructValidator, _,
@@ -1054,13 +1061,13 @@
 
 	_ = __webpack_require__(2);
 
-	MultiValidator = __webpack_require__(12);
+	MultiValidator = __webpack_require__(13);
 
-	FieldValidator = __webpack_require__(9);
+	FieldValidator = __webpack_require__(10);
 
-	RephraseValidator = __webpack_require__(16);
+	RephraseValidator = __webpack_require__(17);
 
-	StructValidationError = __webpack_require__(19);
+	StructValidationError = __webpack_require__(21);
 
 	module.exports = StructValidator = (function(_super) {
 	  __extends(StructValidator, _super);
@@ -1199,61 +1206,12 @@
 
 
 /***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var MultiValidationError, StructValidationError,
-	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	MultiValidationError = __webpack_require__(4);
-
-	module.exports = StructValidationError = (function(_super) {
-	  __extends(StructValidationError, _super);
-
-	  function StructValidationError() {
-	    this.indexFieldErros = __bind(this.indexFieldErros, this);
-	    StructValidationError.__super__.constructor.apply(this, arguments);
-	    this.indexFieldErros();
-	  }
-
-	  StructValidationError.prototype.indexFieldErros = function() {
-	    var assigned, err, field, multiVal, _base, _i, _len, _ref, _ref1;
-	    this.generalErrors = [];
-	    this.fieldErrors = {};
-	    _ref = this.errors;
-	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	      err = _ref[_i];
-	      assigned = false;
-	      _ref1 = this.validator.fieldValidators;
-	      for (field in _ref1) {
-	        multiVal = _ref1[field];
-	        (_base = this.fieldErrors)[field] || (_base[field] = []);
-	        if (multiVal.validators.indexOf(err.validator) > -1) {
-	          this.fieldErrors[field].push(err);
-	          assigned = true;
-	        }
-	      }
-	      if (!assigned) {
-	        this.generalErrors.push(err);
-	      }
-	    }
-	    return this;
-	  };
-
-	  return StructValidationError;
-
-	})(MultiValidationError);
-
-
-/***/ },
 /* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var asap = __webpack_require__(21)
+	var asap = __webpack_require__(22)
 
 	module.exports = Promise
 	function Promise(fn) {
@@ -1360,6 +1318,55 @@
 
 /***/ },
 /* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var MultiValidationError, StructValidationError,
+	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	MultiValidationError = __webpack_require__(5);
+
+	module.exports = StructValidationError = (function(_super) {
+	  __extends(StructValidationError, _super);
+
+	  function StructValidationError() {
+	    this.indexFieldErros = __bind(this.indexFieldErros, this);
+	    StructValidationError.__super__.constructor.apply(this, arguments);
+	    this.indexFieldErros();
+	  }
+
+	  StructValidationError.prototype.indexFieldErros = function() {
+	    var assigned, err, field, multiVal, _base, _i, _len, _ref, _ref1;
+	    this.generalErrors = [];
+	    this.fieldErrors = {};
+	    _ref = this.errors;
+	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	      err = _ref[_i];
+	      assigned = false;
+	      _ref1 = this.validator.fieldValidators;
+	      for (field in _ref1) {
+	        multiVal = _ref1[field];
+	        (_base = this.fieldErrors)[field] || (_base[field] = []);
+	        if (multiVal.validators.indexOf(err.validator) > -1) {
+	          this.fieldErrors[field].push(err);
+	          assigned = true;
+	        }
+	      }
+	      if (!assigned) {
+	        this.generalErrors.push(err);
+	      }
+	    }
+	    return this;
+	  };
+
+	  return StructValidationError;
+
+	})(MultiValidationError);
+
+
+/***/ },
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {
@@ -1476,10 +1483,10 @@
 	module.exports = asap;
 
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(22)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(23)))
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// shim for using process in browser

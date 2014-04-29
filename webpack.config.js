@@ -1,5 +1,5 @@
 module.exports = {
-  entry: "./lib/index.coffee",
+  entry: "./lib/browser.coffee",
   output: {
     path: __dirname,
     filename: "composed-validations.js"
