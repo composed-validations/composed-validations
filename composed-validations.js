@@ -144,6 +144,9 @@
 	  isValidator: function(value) {
 	    return this.isFunction(value != null ? value.test : void 0);
 	  },
+	  isValidationError: function(value) {
+	    return value instanceof ValidationError;
+	  },
 	  isArray: function(value) {
 	    return (value && typeof value === 'object' && typeof value.length === 'number' && toString.call(value) === '[object Array]') || false;
 	  },
@@ -153,7 +156,7 @@
 	    }
 	  },
 	  guardValidationError: function(err) {
-	    if (!(err instanceof ValidationError)) {
+	    if (!this.isValidationError(err)) {
 	      throw err;
 	    }
 	  },
@@ -297,7 +300,7 @@
 
 	//This file contains then/promise specific extensions to the core promise API
 
-	var Promise = __webpack_require__(19)
+	var Promise = __webpack_require__(20)
 	var asap = __webpack_require__(21)
 
 	module.exports = Promise
@@ -1057,7 +1060,7 @@
 
 	RephraseValidator = __webpack_require__(16);
 
-	StructValidationError = __webpack_require__(20);
+	StructValidationError = __webpack_require__(19);
 
 	module.exports = StructValidator = (function(_super) {
 	  __extends(StructValidator, _super);
@@ -1065,6 +1068,8 @@
 	  function StructValidator() {
 	    this._wrapErrorMessage = __bind(this._wrapErrorMessage, this);
 	    this._wrapFieldValidator = __bind(this._wrapFieldValidator, this);
+	    this.valueForField = __bind(this.valueForField, this);
+	    this.lookupForField = __bind(this.lookupForField, this);
 	    this.validatorForField = __bind(this.validatorForField, this);
 	    this.testField = __bind(this.testField, this);
 	    this.addFieldValidator = __bind(this.addFieldValidator, this);
@@ -1128,15 +1133,56 @@
 	  };
 
 	  StructValidator.prototype.testField = function(field, value) {
-	    return this.validatorForField(field).test(value);
+	    var validator;
+	    validator = this.validatorForField(field);
+	    value = this.valueForField(field, value);
+	    return validator.test(value);
 	  };
 
 	  StructValidator.prototype.validatorForField = function(field) {
-	    var validators;
-	    if (!(validators = this.fieldValidators[field])) {
+	    var validator;
+	    if (!(validator = this.lookupForField(field))) {
 	      throw new Error("There are no validators associated with the field " + (_.json(field)));
 	    }
-	    return validators;
+	    return validator;
+	  };
+
+	  StructValidator.prototype.lookupForField = function(field, context) {
+	    var head, subStruct, tail, validator, _i, _len, _ref, _ref1;
+	    if (context == null) {
+	      context = this.fieldValidators;
+	    }
+	    _ref = field.split('.'), head = _ref[0], tail = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+	    if (tail.length > 0) {
+	      _ref1 = context[head].validators;
+	      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+	        validator = _ref1[_i];
+	        subStruct = validator.validator.fieldValidators;
+	        if (subStruct) {
+	          context = subStruct;
+	          if (!context[tail[0]]) {
+	            continue;
+	          }
+	          break;
+	        }
+	      }
+	      return this.lookupForField(tail.join('.'), context);
+	    } else {
+	      return context[head];
+	    }
+	  };
+
+	  StructValidator.prototype.valueForField = function(field, value) {
+	    var head, tail, _ref;
+	    _ref = field.split('.'), head = _ref[0], tail = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+	    if (!value.hasOwnProperty(head)) {
+	      throw new Error("" + (_.json(value)) + " doesn't have the property " + (_.json(head)));
+	    }
+	    if (tail.length > 0) {
+	      return this.valueForField(tail.join('.'), value[head]);
+	    } else {
+	      return value;
+	    }
 	  };
 
 	  StructValidator.prototype._wrapFieldValidator = function(field, validator) {
@@ -1154,6 +1200,55 @@
 
 /***/ },
 /* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var MultiValidationError, StructValidationError,
+	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+	  __hasProp = {}.hasOwnProperty,
+	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+	MultiValidationError = __webpack_require__(4);
+
+	module.exports = StructValidationError = (function(_super) {
+	  __extends(StructValidationError, _super);
+
+	  function StructValidationError() {
+	    this.indexFieldErros = __bind(this.indexFieldErros, this);
+	    StructValidationError.__super__.constructor.apply(this, arguments);
+	    this.indexFieldErros();
+	  }
+
+	  StructValidationError.prototype.indexFieldErros = function() {
+	    var assigned, err, field, multiVal, _base, _i, _len, _ref, _ref1;
+	    this.generalErrors = [];
+	    this.fieldErrors = {};
+	    _ref = this.errors;
+	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+	      err = _ref[_i];
+	      assigned = false;
+	      _ref1 = this.validator.fieldValidators;
+	      for (field in _ref1) {
+	        multiVal = _ref1[field];
+	        (_base = this.fieldErrors)[field] || (_base[field] = []);
+	        if (multiVal.validators.indexOf(err.validator) > -1) {
+	          this.fieldErrors[field].push(err);
+	          assigned = true;
+	        }
+	      }
+	      if (!assigned) {
+	        this.generalErrors.push(err);
+	      }
+	    }
+	    return this;
+	  };
+
+	  return StructValidationError;
+
+	})(MultiValidationError);
+
+
+/***/ },
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1261,55 +1356,6 @@
 	    onRejected(ex)
 	  }
 	}
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var MultiValidationError, StructValidationError,
-	  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-	  __hasProp = {}.hasOwnProperty,
-	  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-	MultiValidationError = __webpack_require__(4);
-
-	module.exports = StructValidationError = (function(_super) {
-	  __extends(StructValidationError, _super);
-
-	  function StructValidationError() {
-	    this.indexFieldErros = __bind(this.indexFieldErros, this);
-	    StructValidationError.__super__.constructor.apply(this, arguments);
-	    this.indexFieldErros();
-	  }
-
-	  StructValidationError.prototype.indexFieldErros = function() {
-	    var assigned, err, field, multiVal, _base, _i, _len, _ref, _ref1;
-	    this.generalErrors = [];
-	    this.fieldErrors = {};
-	    _ref = this.errors;
-	    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-	      err = _ref[_i];
-	      assigned = false;
-	      _ref1 = this.validator.fieldValidators;
-	      for (field in _ref1) {
-	        multiVal = _ref1[field];
-	        (_base = this.fieldErrors)[field] || (_base[field] = []);
-	        if (multiVal.validators.indexOf(err.validator) > -1) {
-	          this.fieldErrors[field].push(err);
-	          assigned = true;
-	        }
-	      }
-	      if (!assigned) {
-	        this.generalErrors.push(err);
-	      }
-	    }
-	    return this;
-	  };
-
-	  return StructValidationError;
-
-	})(MultiValidationError);
 
 
 /***/ },
