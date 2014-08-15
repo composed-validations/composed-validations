@@ -546,7 +546,7 @@ cv.range(min, max);
 
 Remember that `min` and `max` can be pretty much anything, it will work on numbers, but also on strings.
 
-The validator will raise an error on construction if you your `min` is bigger than `max`.
+The validator will raise an error on construction if the `min` value is greater than `max`.
 
 ### Example
 
