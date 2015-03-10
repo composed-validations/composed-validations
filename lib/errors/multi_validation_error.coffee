@@ -2,7 +2,7 @@ _ = require('../util.coffee')
 ValidationError = require('./validation_error.coffee')
 
 module.exports = class MultiValidationError extends ValidationError
-  constructor: (message, value, validator, @errors) ->
+  constructor: (message, value, validator, @errors = []) ->
     super(@errorMessages().join("\n"), value, validator)
 
   errorMessages: =>
